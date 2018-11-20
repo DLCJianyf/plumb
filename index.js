@@ -21,3 +21,7 @@ plumb.getSources().forEach(function(source) {
         size: 18
     });
 }, this);
+
+plumb.on("connected", function(evt) {
+    console.log(evt);
+});

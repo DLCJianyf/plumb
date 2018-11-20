@@ -110,8 +110,8 @@ class Render {
         );
         Util.setAttribute(path, {
             d: `M0,0 L${w},${r} L0,${h} L${r},${r} L0,0`,
-            fill: "black",
-            stroke: "black"
+            fill: "gray",
+            stroke: "white"
         });
 
         marker.appendChild(path);
@@ -296,7 +296,8 @@ class Render {
             let svg = Render.createSVG(width, height, {
                 left: `${bound.minX + size / 2.0}px`,
                 top: `${bound.minY + size / 2.0}px`,
-                overflow: "visible"
+                overflow: "visible",
+                "z-index": 10
             });
             let path = Render.createPath();
             svg.appendChild(path);

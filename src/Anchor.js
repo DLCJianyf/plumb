@@ -76,6 +76,10 @@ class Anchor extends Observable {
                             plumb.config.marker
                         );
                     }
+                    plumb.trigger("connected", {
+                        sourceID: plumb.floatingEndPoint.uuid,
+                        targetID: endPoint.uuid
+                    });
                 }
             }
         }
