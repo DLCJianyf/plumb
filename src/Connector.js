@@ -64,30 +64,30 @@ class Connector {
 
         if (rect[0] === bound.minX) {
             p1.push(minX);
-            // p2.push(minX + width / 10);
-            // p3.push(minX + (width * 9) / 10);
-            p2.push(minX);
+            p2.push(minX + width / 10);
+            p3.push(minX + (width * 9) / 10);
+            //p2.push(minX);
             // p3.push(maxX);
             p4.push(maxX);
         } else {
             p1.push(maxX);
-            // p2.push(minX + (width * 9) / 10);
-            // p3.push(minX + width / 10);
-            p2.push(maxX);
+            p2.push(minX + (width * 9) / 10);
+            p3.push(minX + width / 10);
+            //p2.push(maxX);
             // p3.push(minX);
             p4.push(minX);
         }
-        p3.push(maxX / 2);
+        //p3.push(maxX / 2);
 
         if (rect[1] === bound.minY) {
             p1.push(minY);
             p2.push(maxY);
-            // p3.push(minY);
+            p3.push(minY);
             p4.push(maxY);
         } else {
             p1.push(maxY);
             p2.push(minY);
-            // p3.push(maxY);
+            p3.push(maxY);
             p4.push(minY);
         }
         p3.push(maxY / 2);

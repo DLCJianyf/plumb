@@ -145,13 +145,8 @@ class Render {
      */
     static updateBezier(path, bezierArr) {
         let { p1, p2, p3, p4 } = bezierArr;
-        // Util.setAttribute(path, {
-        //     d: `M${p1[0]},${p1[1]} C${p2[0]},${p2[1]} ${p3[0]},${p3[1]} ${
-        //         p4[0]
-        //     },${p4[1]}`
-        // });
         Util.setAttribute(path, {
-            d: `M${p1[0]},${p1[1]} Q${p2[0]},${p2[1]} ${p3[0]},${p3[1]} T${
+            d: `M${p1[0]},${p1[1]} C${p2[0]},${p2[1]} ${p3[0]},${p3[1]} ${
                 p4[0]
             },${p4[1]}`,
             "stroke-dasharray": Util.getDashStyle(
@@ -159,6 +154,15 @@ class Render {
                 plumb.config.strokeWidth
             ).toString()
         });
+        // Util.setAttribute(path, {
+        //     d: `M${p1[0]},${p1[1]} Q${p2[0]},${p2[1]} ${p3[0]},${p3[1]} T${
+        //         p4[0]
+        //     },${p4[1]}`,
+        //     "stroke-dasharray": Util.getDashStyle(
+        //         plumb.config.lineDashType,
+        //         plumb.config.strokeWidth
+        //     ).toString()
+        // });
     }
 
     /**
