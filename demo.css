@@ -1,0 +1,96 @@
+.demo {
+    /* for IE10+ touch devices */
+    touch-action: none;
+}
+
+/** ELEMENTS **/
+.chart-demo .window {
+    position: absolute;
+    border: 0.1em dotted #d4e06b;
+    width: 14em;
+    height: 4em;
+    line-height: 4em;
+    user-select: none;
+}
+
+/** HOVER EFFECTS **/
+.chart-demo .window:hover,
+.chart-demo .window.jtk-source-hover,
+.chart-demo .window.jtk-target-hover {
+    border: 1px solid orange;
+    color: orange;
+}
+
+/** ELEMENT POSITIONS **/
+#chartWindow1 {
+    left: 400px;
+    top: 60px;
+}
+#chartWindow2 {
+    left: 100px;
+    top: 150px;
+}
+#chartWindow3 {
+    left: 800px;
+    top: 150px;
+}
+#chartWindow4 {
+    left: 400px;
+    top: 400px;
+}
+#chartWindow5 {
+    left: 220px;
+    top: 280px;
+}
+#chartWindow6 {
+    left: 700px;
+    top: 280px;
+}
+#chartWindow7 {
+    top: 180px;
+    left: 460px;
+}
+#chartWindow8 {
+    left: 630px;
+    top: 380px;
+}
+
+.window {
+    background-color: white;
+    border: 1px solid #346789;
+    text-align: center;
+    z-index: 24;
+    cursor: pointer;
+    box-shadow: 2px 2px 19px #aaa;
+    -o-box-shadow: 2px 2px 19px #aaa;
+    -webkit-box-shadow: 2px 2px 19px #aaa;
+    -moz-box-shadow: 2px 2px 19px #aaa;
+    -moz-border-radius: 0.5em;
+    border-radius: 0.5em;
+    position: absolute;
+    color: black;
+    padding: 0.5em;
+    width: 80px;
+    height: 80px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    -webkit-transition: -webkit-box-shadow 0.15s ease-in;
+    -moz-transition: -moz-box-shadow 0.15s ease-in;
+    -o-transition: -o-box-shadow 0.15s ease-in;
+    transition: box-shadow 0.15s ease-in;
+}
+
+.window:hover {
+    border: 1px solid #123456;
+    box-shadow: 2px 2px 19px #444;
+    -o-box-shadow: 2px 2px 19px #444;
+    -webkit-box-shadow: 2px 2px 19px #444;
+    -moz-box-shadow: 2px 2px 19px #fff;
+    opacity: 0.9;
+}
+
+path,
+.jtk-endpoint {
+    cursor: pointer;
+}
