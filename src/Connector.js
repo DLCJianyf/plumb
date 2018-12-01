@@ -42,6 +42,27 @@ class Connector {
     }
 
     /**
+     * 计算SVG Path属性点
+     *
+     * @param {Number} width
+     * @param {Number} height
+     * @param {Number} bound
+     * @param {Number} size
+     */
+    calcPathPointArr(width, height, bound, size) {
+        switch (plumb.config.lineType) {
+            case "BEZIER":
+                return this.calcBezier(width, height, bound, size);
+            case "STRAIGHT":
+                return this.calcStraight(width, height, bound, size);
+            case "FLOW":
+                return this.calcFlow(width, height, bound, size);
+            default:
+                return this.calcBezier(width, height, bound, size);
+        }
+    }
+
+    /**
      * 计算贝塞尔曲线参数
      *
      * @param {Number} width
@@ -92,7 +113,88 @@ class Connector {
         }
         p3.push(maxY / 2);
 
-        return { p1, p2, p3, p4 };
+        return [p1, p2, p3, p4];
+    }
+
+    /**
+     * 计算直线参数
+     *
+     * @param {Number} width
+     * @param {Number} height
+     * @param {Number} bound
+     * @param {Number} size
+     */
+    calcStraight(width, height, bound, size) {
+        let p1 = [];
+        let p2 = [];
+
+        let maxX = bound.maxX - bound.minX;
+        let maxY = bound.maxY - bound.minY;
+        let minX = 0;
+        let minY = 0;
+
+        let rect = this.getSource().getRect();
+
+        if (rect[0] === bound.minX) {
+            p1.push(minX);
+            p2.push(maxX);
+        } else {
+            p1.push(maxX);
+            p2.push(minX);
+        }
+
+        if (rect[1] === bound.minY) {
+            p1.push(minY);
+            p2.push(maxY);
+        } else {
+            p1.push(maxY);
+            p2.push(minY);
+        }
+
+        return [p1, p2];
+    }
+
+    /**
+     * 计算流程线参数
+     *
+     * @param {Number} width
+     * @param {Number} height
+     * @param {Number} bound
+     * @param {Number} size
+     */
+    calcFlow(width, height, bound, size) {
+        let p1 = [];
+        let p2 = [];
+        let p3 = [];
+
+        let maxX = bound.maxX - bound.minX;
+        let maxY = bound.maxY - bound.minY;
+        let minX = 0;
+        let minY = 0;
+
+        let rect = this.getSource().getRect();
+
+        if (rect[0] === bound.minX) {
+            p1.push(minX);
+            p2.push(minX);
+            p3.push(maxX);
+        } else {
+            p1.push(maxX);
+            p2.push(maxX);
+            p3.push(minX);
+        }
+
+        if (rect[1] === bound.minY) {
+            p1.push(minY);
+            p2.push(maxY);
+            p3.push(maxY);
+        } else {
+            p1.push(maxY);
+            p2.push(minY);
+            p3.push(minY);
+        }
+
+        return [p1, p2, p3];
     }
 }
 

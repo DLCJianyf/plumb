@@ -11,25 +11,23 @@ class Observable {
      */
     bind(el, type, callback, scope, capture) {
         let me = this;
+        me.handlers[type] = me.handlers[type] || [];
+
         if (window.addEventListener) {
             return (function(el, type, callback, scope, capture) {
-                el.addEventListener(
-                    type,
-                    function f(evt) {
-                        callback(evt, scope);
-                        me.handlers[type] = me.handlers[type] || [];
-                        me.handlers[type].push(f);
-                    },
-                    !!capture
-                );
+                function f(evt) {
+                    callback(evt, scope);
+                }
+                me.handlers[type].push(f);
+                el.addEventListener(type, f, !!capture);
             })(el, type, callback, scope, capture);
         } else if (window.attachEvent) {
             return (function(el, type, callback, scope) {
-                el.attachEvent("on" + type, function f(evt) {
+                function f(evt) {
                     callback(evt, scope);
-                    me.handlers[type] = me.handlers[type] || [];
-                    me.handlers[type].push(f);
-                });
+                }
+                me.handlers[type].push(f);
+                el.attachEvent("on" + type, f);
             })(el, type, callback, scope);
         } else {
             return (function(el, type, callback, scope) {

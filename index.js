@@ -5,6 +5,7 @@ let sources = document.getElementsByClassName("window");
 window.plumb = new Plumb(sources, {
     marker: "ARROW",
     lineDashType: "DASHDOT",
+    lineType: "STRAIGHT",
     strokeWidth: 2
 });
 

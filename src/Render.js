@@ -137,32 +137,54 @@ class Render {
         return path;
     }
 
-    /**
-     * 更新贝塞尔曲线
-     *
-     * @param {HTMLSVGElement} path
-     * @param {Object} bezierArr
-     */
-    static updateBezier(path, bezierArr) {
-        let { p1, p2, p3, p4 } = bezierArr;
-        Util.setAttribute(path, {
-            d: `M${p1[0]},${p1[1]} C${p2[0]},${p2[1]} ${p3[0]},${p3[1]} ${
-                p4[0]
-            },${p4[1]}`,
-            "stroke-dasharray": Util.getDashStyle(
-                plumb.config.lineDashType,
-                plumb.config.strokeWidth
-            ).toString()
-        });
-        // Util.setAttribute(path, {
-        //     d: `M${p1[0]},${p1[1]} Q${p2[0]},${p2[1]} ${p3[0]},${p3[1]} T${
-        //         p4[0]
-        //     },${p4[1]}`,
-        //     "stroke-dasharray": Util.getDashStyle(
-        //         plumb.config.lineDashType,
-        //         plumb.config.strokeWidth
-        //     ).toString()
-        // });
+    // /**
+    //  * 更新贝塞尔曲线
+    //  *
+    //  * @param {HTMLSVGElement} path
+    //  * @param {Array} pointArr
+    //  */
+    // static updateBezier(path, bezierArr) {
+    //     let { p1, p2, p3, p4 } = bezierArr;
+    //     Util.setAttribute(path, {
+    //         d: `M${p1[0]},${p1[1]} C${p2[0]},${p2[1]} ${p3[0]},${p3[1]} ${
+    //             p4[0]
+    //         },${p4[1]}`,
+    //         "stroke-dasharray": Util.getDashStyle(
+    //             plumb.config.lineDashType,
+    //             plumb.config.strokeWidth
+    //         ).toString()
+    //     });
+    //     // Util.setAttribute(path, {
+    //     //     d: `M${p1[0]},${p1[1]} Q${p2[0]},${p2[1]} ${p3[0]},${p3[1]} T${
+    //     //         p4[0]
+    //     //     },${p4[1]}`,
+    //     //     "stroke-dasharray": Util.getDashStyle(
+    //     //         plumb.config.lineDashType,
+    //     //         plumb.config.strokeWidth
+    //     //     ).toString()
+    //     // });
+    // }
+
+    static updatePath(path, pointArr) {
+        if (!pointArr.length) return;
+
+        let p1 = pointArr[0];
+        let d = `M${p1[0]},${p1[1]}`;
+
+        for (let i = 1; i < pointArr.length; i++) {
+            let p = pointArr[i];
+
+            d += " ";
+            if (i === 1) d += Util.getPathCMD(plumb.config.lineType);
+            d += `${p[0]},${p[1]}`;
+        }
+
+        let strokeDasharray = Util.getDashStyle(
+            plumb.config.lineDashType,
+            plumb.config.strokeWidth
+        ).toString();
+
+        Util.setAttribute(path, { d: d, "stroke-dasharray": strokeDasharray });
     }
 
     /**
@@ -306,21 +328,26 @@ class Render {
             let parentWrapper = document.querySelector(".jtk-demo-canvas");
             parentWrapper.appendChild(connector.element);
 
-            let bezierArr = connector.calcBezier(width, height, bound, size);
+            let pointArr = connector.calcPathPointArr(
+                width,
+                height,
+                bound,
+                size
+            );
             //let path = connector.element.getElementsByTagName("path")[0];
-            Render.updateBezier(path, bezierArr);
+            Render.updatePath(path, pointArr);
         }
     }
 
     static updateConnector(connector, width, height, bound, size) {
         let x = bound.minX + size / 2.0;
         let y = bound.minY + size / 2.0;
-        let bezierArr = connector.calcBezier(width, height, bound, size);
+        let pointArr = connector.calcPathPointArr(width, height, bound, size);
 
         Render.updateSVG(connector.element, width, height, x, y);
 
         let path = connector.element.getElementsByTagName("path")[0];
-        Render.updateBezier(path, bezierArr);
+        Render.updatePath(path, pointArr);
     }
 
     static deleteConnector(connector) {

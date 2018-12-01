@@ -119,6 +119,14 @@ class Util {
                 return [];
         }
     }
+
+    static getPathCMD(type) {
+        if (type === "BEZIER") {
+            return "C";
+        }
+
+        return "L";
+    }
 }
 
 export default Util;
