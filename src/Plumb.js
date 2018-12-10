@@ -6,6 +6,7 @@ import Connector from "./Connector";
 import Drag from "./Drag";
 import Util from "./Util";
 import Render from "./Render";
+import DOMUtil from "./DOMUtil";
 import Observable from "./Observable";
 
 class Plumb extends Observable {
@@ -75,8 +76,13 @@ class Plumb extends Observable {
         }
 
         let endPoint = new EndPoint(opts, pX, pY);
+        endPoint.element = Render.assembleEndPoint(endPoint);
+        DOMUtil.appendToNode(
+            endPoint.element,
+            document.querySelector(".jtk-demo-canvas")
+        );
+
         source.addEndPoint(endPoint);
-        Render.appendEndPoint(endPoint);
         this.draggable(endPoint);
     }
 
@@ -104,11 +110,37 @@ class Plumb extends Observable {
         for (let source of plumb.sources) {
             for (let endPoint of source.endPoints) {
                 if (endPoint.uuid === sourceID) {
-                    let uuid = `${endPoint.uuid}---${targetEndPoint.uuid}`;
+                    let uuid = `${endPoint.uuid}^-^${targetEndPoint.uuid}`;
                     if (!plumb.connectors[uuid]) {
                         let connector = new Connector(endPoint, targetEndPoint);
                         plumb.connectors[uuid] = connector;
-                        Render.appendConnector(connector);
+
+                        let {
+                            width,
+                            height,
+                            bound,
+                            size
+                        } = connector.getSizeAndBound();
+                        connector.element = Render.assembleConnector(
+                            width,
+                            height,
+                            bound,
+                            size
+                        );
+                        DOMUtil.appendToNode(
+                            connector.element,
+                            document.querySelector(".jtk-demo-canvas")
+                        );
+
+                        Render.updatePath(
+                            connector.element.getElementsByTagName("path")[0],
+                            connector.calcPathPointArr(
+                                width,
+                                height,
+                                bound,
+                                size
+                            )
+                        );
                         return uuid;
                     }
 
@@ -133,7 +165,7 @@ class Plumb extends Observable {
 
         for (let uuid in plumb.connectors) {
             let connector = plumb.connectors[uuid];
-            let ids = connector.uuid.split("---");
+            let ids = connector.uuid.split("^-^");
             if (ids[0] === sourceID || ids[1] === sourceID) {
                 Render.deleteConnector(connector);
                 delete plumb.connectors[uuid];
@@ -153,10 +185,12 @@ class Plumb extends Observable {
                 UUID === connector.getSource().uuid ||
                 UUID === connector.getTarget().uuid
             ) {
-                let bound = connector.getBound();
-                let size = connector.getPointSize();
-                let width = Util.distance(bound.minX, bound.maxX);
-                let height = Util.distance(bound.minY, bound.maxY);
+                let {
+                    width,
+                    height,
+                    bound,
+                    size
+                } = connector.getSizeAndBound();
                 Render.updateConnector(connector, width, height, bound, size);
             }
         }
@@ -165,7 +199,11 @@ class Plumb extends Observable {
     addMarker(connectorUUID, rect, markerType) {
         let connector = plumb.connectors[connectorUUID];
         let parentWrapper = connector.element;
-        Render.addMarker(parentWrapper, rect, markerType);
+        let marker = Render.assembleMarker(rect, markerType);
+        DOMUtil.appendToNode(marker, parentWrapper);
+
+        let path = parentWrapper.getElementsByTagName("path")[0];
+        DOMUtil.setAttribute(path, "marker-end", "url(#marker-achor)");
     }
 
     /**

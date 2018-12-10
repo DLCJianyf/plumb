@@ -7,7 +7,7 @@ class Connector {
     constructor(sourceEndPoint, targetEndPoint) {
         this.sourceEndPoint = sourceEndPoint;
         this.targetEndPoint = targetEndPoint;
-        this.uuid = `${sourceEndPoint.uuid}---${targetEndPoint.uuid}`;
+        this.uuid = `${sourceEndPoint.uuid}^-^${targetEndPoint.uuid}`;
     }
 
     /**
@@ -39,6 +39,23 @@ class Connector {
      */
     getPointSize() {
         return this.getSource().getRect()[2] || 0;
+    }
+	
+	/**
+     * 获取连接线大小及外界矩形
+     */
+    getSizeAndBound() {
+        let bound = this.getBound();
+        let size = this.getPointSize();
+        let width = Util.distance(bound.minX, bound.maxX);
+        let height = Util.distance(bound.minY, bound.maxY);
+
+        return {
+            size,
+            width,
+            height,
+            bound
+        };
     }
 
     /**

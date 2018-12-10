@@ -1,4 +1,5 @@
 import Util from "./Util";
+import DOMUtil from "./DOMUtil";
 
 /**
  * 渲染类，根据构建好的参数进行dom神马的创建，更新
@@ -137,34 +138,6 @@ class Render {
         return path;
     }
 
-    // /**
-    //  * 更新贝塞尔曲线
-    //  *
-    //  * @param {HTMLSVGElement} path
-    //  * @param {Array} pointArr
-    //  */
-    // static updateBezier(path, bezierArr) {
-    //     let { p1, p2, p3, p4 } = bezierArr;
-    //     Util.setAttribute(path, {
-    //         d: `M${p1[0]},${p1[1]} C${p2[0]},${p2[1]} ${p3[0]},${p3[1]} ${
-    //             p4[0]
-    //         },${p4[1]}`,
-    //         "stroke-dasharray": Util.getDashStyle(
-    //             plumb.config.lineDashType,
-    //             plumb.config.strokeWidth
-    //         ).toString()
-    //     });
-    //     // Util.setAttribute(path, {
-    //     //     d: `M${p1[0]},${p1[1]} Q${p2[0]},${p2[1]} ${p3[0]},${p3[1]} T${
-    //     //         p4[0]
-    //     //     },${p4[1]}`,
-    //     //     "stroke-dasharray": Util.getDashStyle(
-    //     //         plumb.config.lineDashType,
-    //     //         plumb.config.strokeWidth
-    //     //     ).toString()
-    //     // });
-    // }
-
     static updatePath(path, pointArr) {
         if (!pointArr.length) return;
 
@@ -184,27 +157,9 @@ class Render {
             plumb.config.strokeWidth
         ).toString();
 
-        Util.setAttribute(path, { d: d, "stroke-dasharray": strokeDasharray });
-    }
-
-    /**
-     * 更新SVG
-     *
-     * @param {HTMLSVGElement} svg
-     * @param {Number} width
-     * @param {Number} height
-     * @param {Number} x
-     * @param {Number} y
-     */
-    static updateSVG(svg, width, height, x, y) {
-        Util.setAttribute(svg, {
-            width: width,
-            height: height
-        });
-
-        Util.setStyle(svg, {
-            left: `${x}px`,
-            top: `${y}px`
+        DOMUtil.setAttributes(path, {
+            d: d,
+            "stroke-dasharray": strokeDasharray
         });
     }
 
@@ -213,32 +168,30 @@ class Render {
      *
      * @param {EndPoint} endPoint
      */
-    static appendEndPoint(endPoint) {
-        if (!endPoint.element) {
-            let rect = endPoint.getRect();
-            let div = Render.createDiv(endPoint.uuid, "endpoint", {
-                left: `${rect[0]}px`,
-                top: `${rect[1]}px`,
-                width: `${rect[2]}px`,
-                height: `${rect[3]}px`
-            });
-            let svg = Render.createSVG(rect[2], rect[3], {
-                left: "0px",
-                top: "0px",
-                opacity: 0.8
-            });
-            let circle = Render.createCircle(
-                rect[2] / 2.0,
-                rect[2] / 2.0,
-                rect[2] / 2.0
-            );
-            svg.appendChild(circle);
-            div.appendChild(svg);
+    static assembleEndPoint(endPoint) {
+        //if (!endPoint.element) {
+        let rect = endPoint.getRect();
+        let div = Render.createDiv(endPoint.uuid, "endpoint", {
+            left: `${rect[0]}px`,
+            top: `${rect[1]}px`,
+            width: `${rect[2]}px`,
+            height: `${rect[3]}px`
+        });
+        let svg = Render.createSVG(rect[2], rect[3], {
+            left: "0px",
+            top: "0px",
+            opacity: 0.8
+        });
+        let circle = Render.createCircle(
+            rect[2] / 2.0,
+            rect[2] / 2.0,
+            rect[2] / 2.0
+        );
 
-            endPoint.element = div;
-        }
-        let parentWrapper = document.querySelector(".jtk-demo-canvas");
-        parentWrapper.appendChild(endPoint.element);
+        DOMUtil.appendToNode(circle, svg);
+        DOMUtil.appendToNode(svg, div);
+        return div;
+        //}
     }
 
     /**
@@ -246,56 +199,54 @@ class Render {
      *
      * @param {Anchor} anchor
      */
-    static appendAnchor(anchor) {
-        if (!anchor.element) {
-            let rect = anchor.getRect();
-            let div = Render.createDiv(anchor.uuid, "anchor", {
-                left: `${rect[0]}px`,
-                top: `${rect[1]}px`,
-                width: `${rect[2]}px`,
-                height: `${rect[3]}px`
-            });
-            let svg = Render.createSVG(rect[2], rect[3], {
-                left: "0px",
-                top: "0px",
-                opacity: 0.8
-            });
-            let shape = Render.createCircle(
-                rect[2] / 2.0,
-                rect[2] / 2.0,
-                rect[2] / 2.0
-            );
-            // switch (anchor.shape) {
-            //     case "ARROW":
-            //         shape = Render.createArrow(
-            //             rect[2] / 2.0,
-            //             rect[2] / 2.0,
-            //             rect[2] / 2.0
-            //         );
-            //         break;
-            //     case "CIRCLE":
-            //         shape = Render.createCircle(
-            //             rect[2] / 2.0,
-            //             rect[2] / 2.0,
-            //             rect[2] / 2.0
-            //         );
-            //         break;
+    static assembleAnchor(anchor) {
+        //if (!anchor.element) {
+        let rect = anchor.getRect();
+        let div = Render.createDiv(anchor.uuid, "anchor", {
+            left: `${rect[0]}px`,
+            top: `${rect[1]}px`,
+            width: `${rect[2]}px`,
+            height: `${rect[3]}px`
+        });
+        let svg = Render.createSVG(rect[2], rect[3], {
+            left: "0px",
+            top: "0px",
+            opacity: 0.8
+        });
+        let shape = Render.createCircle(
+            rect[2] / 2.0,
+            rect[2] / 2.0,
+            rect[2] / 2.0
+        );
+        // switch (anchor.shape) {
+        //     case "ARROW":
+        //         shape = Render.createArrow(
+        //             rect[2] / 2.0,
+        //             rect[2] / 2.0,
+        //             rect[2] / 2.0
+        //         );
+        //         break;
+        //     case "CIRCLE":
+        //         shape = Render.createCircle(
+        //             rect[2] / 2.0,
+        //             rect[2] / 2.0,
+        //             rect[2] / 2.0
+        //         );
+        //         break;
 
-            //     default:
-            //         shape = Render.createCircle(
-            //             rect[2] / 2.0,
-            //             rect[2] / 2.0,
-            //             rect[2] / 2.0
-            //         );
-            //         break;
-            // }
+        //     default:
+        //         shape = Render.createCircle(
+        //             rect[2] / 2.0,
+        //             rect[2] / 2.0,
+        //             rect[2] / 2.0
+        //         );
+        //         break;
+        // }
 
-            svg.appendChild(shape);
-            div.appendChild(svg);
-            anchor.element = div;
-        }
-        let parentWrapper = document.querySelector(".jtk-demo-canvas");
-        parentWrapper.appendChild(anchor.element);
+        DOMUtil.appendToNode(shape, svg);
+        DOMUtil.appendToNode(svg, div);
+        return div;
+        //}
     }
 
     /**
@@ -308,44 +259,29 @@ class Render {
         parentWrapper.removeChild(anchor.element);
     }
 
-    static appendConnector(connector) {
-        if (!connector.element) {
-            let bound = connector.getBound();
-            let size = connector.getPointSize();
-            let width = Util.distance(bound.minX, bound.maxX);
-            let height = Util.distance(bound.minY, bound.maxY);
+    static assembleConnector(width, height, bound, size) {
+        //if (!connector.element) {
 
-            let svg = Render.createSVG(width, height, {
-                left: `${bound.minX + size / 2.0}px`,
-                top: `${bound.minY + size / 2.0}px`,
-                overflow: "visible",
-                "z-index": 10
-            });
-            let path = Render.createPath();
-            svg.appendChild(path);
-            connector.element = svg;
-
-            let parentWrapper = document.querySelector(".jtk-demo-canvas");
-            parentWrapper.appendChild(connector.element);
-
-            let pointArr = connector.calcPathPointArr(
-                width,
-                height,
-                bound,
-                size
-            );
-            //let path = connector.element.getElementsByTagName("path")[0];
-            Render.updatePath(path, pointArr);
-        }
+        let svg = Render.createSVG(width, height, {
+            left: `${bound.minX + size / 2.0}px`,
+            top: `${bound.minY + size / 2.0}px`,
+            overflow: "visible",
+            "z-index": 10
+        });
+        let path = Render.createPath();
+        svg.appendChild(path);
+        return svg;
+        //}
     }
 
     static updateConnector(connector, width, height, bound, size) {
         let x = bound.minX + size / 2.0;
         let y = bound.minY + size / 2.0;
+
+        //Render.updateSVG(connector.element, width, height, x, y);
+        DOMUtil.sizeElement(connector.element, x, y, width, height);
+
         let pointArr = connector.calcPathPointArr(width, height, bound, size);
-
-        Render.updateSVG(connector.element, width, height, x, y);
-
         let path = connector.element.getElementsByTagName("path")[0];
         Render.updatePath(path, pointArr);
     }
@@ -357,7 +293,7 @@ class Render {
         }
     }
 
-    static addMarker(parentWrapper, rect, markerType) {
+    static assembleMarker(rect, markerType) {
         let shape;
         switch (markerType) {
             case "ARROW":
@@ -378,12 +314,7 @@ class Render {
                 );
                 break;
         }
-
-        let path = parentWrapper.getElementsByTagName("path")[0];
-        Util.setAttribute(path, {
-            "marker-end": "url(#marker-achor)"
-        });
-        parentWrapper.appendChild(shape);
+        return shape;
     }
 }
 

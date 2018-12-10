@@ -1,5 +1,6 @@
 import Util from "./Util";
 import Render from "./Render";
+import DOMUtil from "./DOMUtil";
 import Observable from "./Observable";
 
 /**
@@ -53,7 +54,13 @@ class EndPoint extends Observable {
                 this.originX,
                 this.originY
             );
-            Render.appendAnchor(plumb.floatingEndPoint);
+            plumb.floatingEndPoint.element = Render.assembleAnchor(
+                plumb.floatingEndPoint
+            );
+            DOMUtil.appendToNode(
+                plumb.floatingEndPoint.element,
+                document.querySelector(".jtk-demo-canvas")
+            );
             plumb.draggable(plumb.floatingEndPoint);
         }
     }
