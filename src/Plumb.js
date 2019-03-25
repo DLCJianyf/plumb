@@ -70,6 +70,14 @@ class Plumb extends Observable {
                 pX = rect[0] + rect[2] / 2.0 - opts.size / 2.0;
                 pY = rect[1] + rect[3] - opts.size / 2.0;
                 break;
+            case "left":
+                pX = rect[0] - opts.size / 2.0;
+                pY = rect[1] + rect[3] / 2.0 - opts.size / 2.0;
+                break;
+            case "right":
+                pX = rect[0] + rect[2] - opts.size / 2.0;
+                pY = rect[1] + rect[3] / 2.0 - opts.size / 2.0;
+                break;
             default:
                 pX = rect[0] + rect[2] / 2.0 - opts.size / 2.0;
                 pY = rect[1] + rect[3] - opts.size / 2.0;
@@ -77,10 +85,7 @@ class Plumb extends Observable {
 
         let endPoint = new EndPoint(opts, pX, pY);
         endPoint.element = Render.assembleEndPoint(endPoint);
-        DOMUtil.appendToNode(
-            endPoint.element,
-            document.querySelector(".jtk-demo-canvas")
-        );
+        DOMUtil.appendToNode(endPoint.element, document.querySelector(".jtk-demo-canvas"));
 
         source.addEndPoint(endPoint);
         this.draggable(endPoint);
@@ -115,18 +120,8 @@ class Plumb extends Observable {
                         let connector = new Connector(endPoint, targetEndPoint);
                         plumb.connectors[uuid] = connector;
 
-                        let {
-                            width,
-                            height,
-                            bound,
-                            size
-                        } = connector.getSizeAndBound();
-                        connector.element = Render.assembleConnector(
-                            width,
-                            height,
-                            bound,
-                            size
-                        );
+                        let { width, height, bound, size } = connector.getSizeAndBound();
+                        connector.element = Render.assembleConnector(width, height, bound, size);
                         DOMUtil.appendToNode(
                             connector.element,
                             document.querySelector(".jtk-demo-canvas")
@@ -134,12 +129,7 @@ class Plumb extends Observable {
 
                         Render.updatePath(
                             connector.element.getElementsByTagName("path")[0],
-                            connector.calcPathPointArr(
-                                width,
-                                height,
-                                bound,
-                                size
-                            )
+                            connector.calcPathPointArr(width, height, bound, size)
                         );
                         return uuid;
                     }
@@ -181,16 +171,8 @@ class Plumb extends Observable {
     updateConnector(UUID) {
         for (let uuid in plumb.connectors) {
             let connector = plumb.connectors[uuid];
-            if (
-                UUID === connector.getSource().uuid ||
-                UUID === connector.getTarget().uuid
-            ) {
-                let {
-                    width,
-                    height,
-                    bound,
-                    size
-                } = connector.getSizeAndBound();
+            if (UUID === connector.getSource().uuid || UUID === connector.getTarget().uuid) {
+                let { width, height, bound, size } = connector.getSizeAndBound();
                 Render.updateConnector(connector, width, height, bound, size);
             }
         }
