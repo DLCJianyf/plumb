@@ -42,9 +42,7 @@ class Util {
     }
 
     static isCircleIntersect(c1, c2) {
-        let centerDistance = Math.sqrt(
-            Math.pow(c1.x - c2.x, 2) + Math.pow(c1.y - c2.y, 2)
-        );
+        let centerDistance = Math.sqrt(Math.pow(c1.x - c2.x, 2) + Math.pow(c1.y - c2.y, 2));
 
         return centerDistance <= c1.r * 2;
     }
@@ -88,11 +86,9 @@ class Util {
     }
 
     static getElementRectInfo(element) {
-        return ["offsetLeft", "offsetTop", "offsetWidth", "offsetHeight"].map(
-            function(attrName) {
-                return element[attrName] || 0;
-            }
-        );
+        return ["offsetLeft", "offsetTop", "offsetWidth", "offsetHeight"].map(function(attrName) {
+            return element[attrName] || 0;
+        });
     }
 
     /**

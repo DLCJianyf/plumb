@@ -98,37 +98,50 @@ class Connector {
         let minX = 0;
         let minY = 0;
 
-        let rect = this.getSource().getRect();
+        let thresoldX = 200;
+        let thresoldY = 0;
+        let sourceP = this.getSource();
+        let rect1 = sourceP.getRect();
+        let rect2 = this.getTarget().getRect();
 
-        if (rect[0] === bound.minX) {
-            p1.push(minX);
-            p2.push(minX + width / 10);
-            p3.push(minX + (width * 9) / 10);
-            //p2.push(minX);
-            // p3.push(maxX);
-            p4.push(maxX);
+        if (sourceP.anchor === "right" || sourceP.anchor === "bottom") {
+            if (rect1[0] < rect2[0]) {
+                p1.push(minX);
+                p2.push(minX + thresoldX);
+                p3.push(maxX - thresoldX);
+                p4.push(maxX);
+            } else {
+                p1.push(maxX);
+                p2.push(maxX + thresoldX);
+                p3.push(minX - thresoldX);
+                p4.push(minX);
+            }
         } else {
-            p1.push(maxX);
-            p2.push(minX + (width * 9) / 10);
-            p3.push(minX + width / 10);
-            //p2.push(maxX);
-            // p3.push(minX);
-            p4.push(minX);
+            if (rect1[0] > rect2[0]) {
+                p1.push(maxX);
+                p2.push(maxX - thresoldX);
+                p3.push(minX + thresoldX);
+                p4.push(minX);
+            } else {
+                p1.push(minX);
+                p2.push(minX - thresoldX);
+                p3.push(maxX + thresoldX);
+                p4.push(maxX);
+            }
         }
-        //p3.push(maxX / 2);
 
-        if (rect[1] === bound.minY) {
+        if (rect1[1] === bound.minY) {
             p1.push(minY);
-            p2.push(maxY);
-            p3.push(minY);
+            p2.push(minY + thresoldY);
+            p3.push(maxY - thresoldY);
             p4.push(maxY);
         } else {
             p1.push(maxY);
-            p2.push(minY);
-            p3.push(maxY);
+            p2.push(maxY - thresoldY);
+            p3.push(minY + thresoldY);
             p4.push(minY);
         }
-        p3.push(maxY / 2);
+        //p3.push(maxY / 2);
 
         return [p1, p2, p3, p4];
     }
@@ -189,9 +202,24 @@ class Connector {
         let minX = 0;
         let minY = 0;
 
-        let rect = this.getSource().getRect();
+        let sourceP = this.getSource();
+        let rect1 = sourceP.getRect();
+        let rect2 = this.getTarget().getRect();
 
-        if (rect[0] === bound.minX) {
+        switch (sourceP.anchor) {
+            case "left":
+                break;
+            case "right":
+                break;
+            case "top":
+                break;
+            case "bottom":
+                break;
+            default:
+                break;
+        }
+
+        if (rect1[0] === bound.minX) {
             p1.push(minX);
             p2.push(minX);
             p3.push(maxX);
@@ -201,7 +229,7 @@ class Connector {
             p3.push(minX);
         }
 
-        if (rect[1] === bound.minY) {
+        if (rect1[1] === bound.minY) {
             p1.push(minY);
             p2.push(maxY);
             p3.push(maxY);

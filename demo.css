@@ -1,3 +1,8 @@
+html,
+body {
+    font-size: 12px;
+}
+
 .demo {
     /* for IE10+ touch devices */
     touch-action: none;
@@ -8,7 +13,7 @@
     position: absolute;
     border: 0.1em dotted #d4e06b;
     width: 14em;
-    height: 4em;
+    height: 3em;
     line-height: 4em;
     user-select: none;
 }
