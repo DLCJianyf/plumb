@@ -13,8 +13,7 @@ class Render {
      * @param {Number} y
      */
     static updatePosition(el, x, y) {
-        el.style.left = `${x}px`;
-        el.style.top = `${y}px`;
+        DOMUtil.setPosition(el, { left: x, top: y });
     }
 
     /**
@@ -25,16 +24,9 @@ class Render {
      * @param {Object} style
      */
     static createDiv(id, className, style) {
-        let div = document.createElement("div");
-        Util.setAttribute(div, {
-            id: id,
-            class: className
-        });
-
         style = Object.assign({}, style, { position: "absolute", zIndex: 1 });
-        Util.setStyle(div, style);
 
-        return div;
+        return DOMUtil.createElement("div", style, className, { id: id });
     }
 
     /**
@@ -45,18 +37,14 @@ class Render {
      * @param {Object} style
      */
     static createSVG(width, height, style) {
-        let svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
-        Util.setAttribute(svg, {
+        style = Object.assign({}, style, { position: "absolute" });
+
+        return DOMUtil.createElementNS(DOMUtil.ns, "svg", style, null, {
             version: "1.1",
             position: "absolute",
             width: width,
             height: height
         });
-
-        style = Object.assign({}, style, { position: "absolute" });
-        Util.setStyle(svg, style);
-
-        return svg;
     }
 
     /**
@@ -67,11 +55,8 @@ class Render {
      * @param {Number} r
      */
     static createCircle(x, y, r) {
-        let circle = document.createElementNS(
-            "http://www.w3.org/2000/svg",
-            "circle"
-        );
-        Util.setAttribute(circle, {
+        return DOMUtil.createElementNS(DOMUtil.ns, "circle", {}, null, {
+            id: Util.guid(),
             cx: x,
             cy: y,
             r: r,
@@ -79,22 +64,20 @@ class Render {
             fill: "gray",
             stroke: "none"
         });
-
-        return circle;
     }
 
+    /**
+     * 创建箭头
+     *
+     * @param {Number} x
+     * @param {Number} y
+     * @param {Number} r
+     */
     static createArrow(x, y, r) {
         let w = 2 * r;
         let h = 2 * r;
-        let defs = document.createElementNS(
-            "http://www.w3.org/2000/svg",
-            "defs"
-        );
-        let marker = document.createElementNS(
-            "http://www.w3.org/2000/svg",
-            "marker"
-        );
-        Util.setAttribute(marker, {
+        let defs = DOMUtil.createElementNS(DOMUtil.ns, "defs");
+        let marker = DOMUtil.createElementNS(DOMUtil.ns, "marker", {}, null, {
             id: "marker-achor",
             markerUnits: "userSpaceOnUse",
             markerWidth: w,
@@ -104,19 +87,14 @@ class Render {
             refY: r,
             orient: "auto"
         });
-
-        let path = document.createElementNS(
-            "http://www.w3.org/2000/svg",
-            "path"
-        );
-        Util.setAttribute(path, {
+        let path = DOMUtil.createElementNS(DOMUtil.ns, "path", {}, null, {
             d: `M0,0 L${w},${r} L0,${h} L${r},${r} L0,0`,
             fill: "gray",
             stroke: "white"
         });
 
-        marker.appendChild(path);
-        defs.appendChild(marker);
+        DOMUtil.appendToNode(path, marker);
+        DOMUtil.appendToNode(marker, defs);
 
         return defs;
     }
@@ -125,19 +103,19 @@ class Render {
      * 创建SVG路径
      */
     static createPath() {
-        let path = document.createElementNS(
-            "http://www.w3.org/2000/svg",
-            "path"
-        );
-        Util.setAttribute(path, {
+        return DOMUtil.createElementNS(DOMUtil.ns, "path", {}, null, {
             fill: "none",
             stroke: "gray",
             "stroke-width": 2
         });
-
-        return path;
     }
 
+    /**
+     * 更新路径
+     *
+     * @param {HTMLSVGElement} path
+     * @param {Array}          pointArr
+     */
     static updatePath(path, pointArr) {
         if (!pointArr.length) return;
 
@@ -182,11 +160,7 @@ class Render {
             top: "0px",
             opacity: 0.8
         });
-        let circle = Render.createCircle(
-            rect[2] / 2.0,
-            rect[2] / 2.0,
-            rect[2] / 2.0
-        );
+        let circle = Render.createCircle(rect[2] / 2.0, rect[2] / 2.0, rect[2] / 2.0);
 
         DOMUtil.appendToNode(circle, svg);
         DOMUtil.appendToNode(svg, div);
@@ -213,11 +187,7 @@ class Render {
             top: "0px",
             opacity: 0.8
         });
-        let shape = Render.createCircle(
-            rect[2] / 2.0,
-            rect[2] / 2.0,
-            rect[2] / 2.0
-        );
+        let shape = Render.createCircle(rect[2] / 2.0, rect[2] / 2.0, rect[2] / 2.0);
         // switch (anchor.shape) {
         //     case "ARROW":
         //         shape = Render.createArrow(
@@ -297,21 +267,13 @@ class Render {
         let shape;
         switch (markerType) {
             case "ARROW":
-                shape = Render.createArrow(
-                    rect[2] / 2.0,
-                    rect[2] / 2.0,
-                    rect[2] / 2.0
-                );
+                shape = Render.createArrow(rect[2] / 2.0, rect[2] / 2.0, rect[2] / 2.0);
                 break;
             case "star":
                 break;
 
             default:
-                shape = Render.createArrow(
-                    rect[2] / 2.0,
-                    rect[2] / 2.0,
-                    rect[2] / 2.0
-                );
+                shape = Render.createArrow(rect[2] / 2.0, rect[2] / 2.0, rect[2] / 2.0);
                 break;
         }
         return shape;

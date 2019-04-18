@@ -38,7 +38,7 @@ class Plumb extends Observable {
      * @param {Object} target
      */
     draggable(target) {
-        this.bind(target.element, "mousedown", Drag.dragStart, target);
+        this.bind(document, "mousedown", Drag.dragStart, target);
         this.bind(document, "mousemove", Drag.dragging, target);
         this.bind(document, "mouseup", Drag.dragEnd, target);
     }
@@ -49,7 +49,7 @@ class Plumb extends Observable {
      * @param {Object} target
      */
     unDraggable(target) {
-        this.unbind(target.element, "mousedown");
+        this.unbind(document, "mousedown");
         this.unbind(document, "mousemove");
         this.unbind(document, "mouseup");
     }
@@ -148,15 +148,17 @@ class Plumb extends Observable {
      * 删除连接线
      *
      * @param {EndPoint} point
+     * @param {EndPoint} point
      */
-    deleteConnector(point) {
+    deleteConnector(point, target) {
         let isBreak = false;
         let sourceID = point.uuid;
+        let targetID = (target && target.uuid) || sourceID;
 
         for (let uuid in plumb.connectors) {
             let connector = plumb.connectors[uuid];
             let ids = connector.uuid.split("^-^");
-            if (ids[0] === sourceID || ids[1] === sourceID) {
+            if (ids[0] === sourceID && ids[1] === targetID) {
                 Render.deleteConnector(connector);
                 delete plumb.connectors[uuid];
             }

@@ -49,14 +49,12 @@ class EndPoint extends Observable {
     moved(args) {
         if (!plumb.floatingEndPoint) {
             plumb.floatingEndPoint = plumb.createFloatingEndPoint(
-                this.rect.slice(),
+                this.rect.slice(0),
                 this.uuid,
                 this.originX,
                 this.originY
             );
-            plumb.floatingEndPoint.element = Render.assembleAnchor(
-                plumb.floatingEndPoint
-            );
+            plumb.floatingEndPoint.element = Render.assembleAnchor(plumb.floatingEndPoint);
             DOMUtil.appendToNode(
                 plumb.floatingEndPoint.element,
                 document.querySelector(".jtk-demo-canvas")

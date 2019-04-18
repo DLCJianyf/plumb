@@ -47,15 +47,15 @@ class Util {
         return centerDistance <= c1.r * 2;
     }
 
-    /**
-     * 创建带有指定命名空间的元素节点
-     *
-     * @param {String} ns
-     * @param {String} name
-     */
-    static createElementNS(ns, name) {
-        return document.createElementNS(ns, name);
-    }
+    // /**
+    //  * 创建带有指定命名空间的元素节点
+    //  *
+    //  * @param {String} ns
+    //  * @param {String} name
+    //  */
+    // static createElementNS(ns, name) {
+    //     return document.createElementNS(ns, name);
+    // }
 
     /**
      * 设置dom元素属性
@@ -122,6 +122,14 @@ class Util {
         }
 
         return "L";
+    }
+
+    static guid() {
+        return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, function(c) {
+            var r = (Math.random() * 16) | 0,
+                v = c == "x" ? r : (r & 0x3) | 0x8;
+            return v.toString(16);
+        });
     }
 }
 

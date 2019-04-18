@@ -28,14 +28,11 @@ const DOMUtil = {
      * @param {Object} atts
      */
     createElementNS: function(ns, tag, style, clazz, atts) {
-        let e =
-            ns === null
-                ? document.createElement(tag)
-                : document.createElementNS(ns, tag);
+        let e = ns === null ? document.createElement(tag) : document.createElementNS(ns, tag);
 
         let i;
         style = style || {};
-        for (i in styles) {
+        for (i in style) {
             e.style[i] = style[i];
         }
 
@@ -127,9 +124,7 @@ const DOMUtil = {
      * @param {HTMLElement} parentNode
      */
     appendToNode: function(node, parentNode) {
-        !parentNode
-            ? document.body.appendChild(node)
-            : parentNode.appendChild(node);
+        !parentNode ? document.body.appendChild(node) : parentNode.appendChild(node);
     },
 
     /**
