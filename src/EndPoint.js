@@ -1,4 +1,5 @@
 import Util from "./Util";
+import Drag from "./Drag";
 import Render from "./Render";
 import DOMUtil from "./DOMUtil";
 import Observable from "./Observable";
@@ -59,7 +60,10 @@ class EndPoint extends Observable {
                 plumb.floatingEndPoint.element,
                 document.querySelector(".jtk-demo-canvas")
             );
-            plumb.draggable(plumb.floatingEndPoint);
+            plumb.draggable(plumb.floatingEndPoint, "ENDPOINT");
+
+            //更改拖拽目标
+            Drag.setDragEl(plumb.floatingEndPoint);
         }
     }
 }

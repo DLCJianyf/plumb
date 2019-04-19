@@ -40,11 +40,12 @@ class Anchor extends Observable {
     moveend() {
         if (!plumb.floatingEndPoint) return;
 
-        plumb.unDraggable(plumb.floatingEndPoint);
+        //移除拖拽功能
+        plumb.unDraggable(plumb.floatingEndPoint, "ENDPOINT");
+        //删除锚点
         Render.deleteAnchor(plumb.floatingEndPoint);
+        //删除连接线
         plumb.deleteConnector(plumb.floatingEndPoint, null);
-        plumb.floatingEndPoint.off("moved");
-        plumb.floatingEndPoint.off("moveend");
 
         let rect1 = plumb.floatingEndPoint.getRect();
         for (let source of plumb.sources) {

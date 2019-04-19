@@ -13,6 +13,7 @@ class Source extends Observable {
 
         this.endPoints = [];
         this.element = element;
+        this.uuid = this.element.id;
 
         this.prev = null;
         this.next = null;

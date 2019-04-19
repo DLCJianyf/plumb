@@ -1,3 +1,5 @@
+import DOMUtil from "./DOMUtil";
+
 /**
  * 工具类，静态方法
  */
@@ -12,6 +14,13 @@ class Util {
 
     static distance(a, b) {
         return Math.abs(a - b);
+    }
+
+    static distanceLine(p1, p2) {
+        let $x = p1.x - p2.x;
+        let $y = p1.y - p2.y;
+
+        return Math.sqrt($x * $x + $y * $y);
     }
 
     static getBoundByCircle(center, r) {
@@ -47,15 +56,15 @@ class Util {
         return centerDistance <= c1.r * 2;
     }
 
-    // /**
-    //  * 创建带有指定命名空间的元素节点
-    //  *
-    //  * @param {String} ns
-    //  * @param {String} name
-    //  */
-    // static createElementNS(ns, name) {
-    //     return document.createElementNS(ns, name);
-    // }
+    static isInRect(p, rect) {
+        return p.x > rect[0] && p.x < rect[0] + rect[2] && p.y > rect[1] && p.y < rect[1] + rect[3];
+    }
+
+    static isInCircle(p, rect) {
+        let dis = Util.distanceLine(p, { x: rect[0], y: rect[1] });
+
+        return dis <= rect[2];
+    }
 
     /**
      * 设置dom元素属性

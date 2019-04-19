@@ -18,40 +18,69 @@ class Plumb extends Observable {
         this.sources = [];
         this.endPoints = [];
         this.connectors = [];
+
+        //可拖拽元素
+        this.draggableEls = {
+            SOURCE: [],
+            ENDPOINT: []
+        };
         this.init(targets);
     }
 
+    /**
+     * 初始化
+     *
+     * @param {Array} targets
+     */
     init(targets) {
         if (!targets) return;
         if (targets.length === undefined) targets = [targets];
         Array.prototype.slice.call(targets).forEach(function(target) {
             let source = new Source(target);
 
-            this.draggable(source);
+            this.draggable(source, "SOURCE");
             this.sources.push(source);
         }, this);
+
+        this.initEvents();
     }
 
     /**
-     * 为目标元素绑定拖动事件
-     *
-     * @param {Object} target
+     * 初始化全局事件
      */
-    draggable(target) {
-        this.bind(document, "mousedown", Drag.dragStart, target);
-        this.bind(document, "mousemove", Drag.dragging, target);
-        this.bind(document, "mouseup", Drag.dragEnd, target);
+    initEvents() {
+        this.bind(document, "mousedown", Drag.dragStart);
+        this.bind(document, "mousemove", Drag.dragging);
+        this.bind(document, "mouseup", Drag.dragEnd);
     }
 
     /**
-     * 接触目标元素拖动事件
+     * 为目标元素添加拖拽能力
      *
      * @param {Object} target
+     * @param {String} type
      */
-    unDraggable(target) {
-        this.unbind(document, "mousedown");
-        this.unbind(document, "mousemove");
-        this.unbind(document, "mouseup");
+    draggable(target, type) {
+        this.draggableEls[type].push(target);
+    }
+
+    /**
+     * 移除目标元素拖拽能力
+     *
+     * @param {Object} target
+     * @param {String} type
+     */
+    unDraggable(target, type) {
+        target.off("moved");
+        target.off("moveend");
+
+        let els = this.draggableEls[type];
+        for (let i = 0; i < els.length; i++) {
+            if (els[i].uuid === target.uuid && els[i].type === target.type) {
+                els.splice(i, 1);
+                break;
+            }
+        }
     }
 
     /**
@@ -81,6 +110,7 @@ class Plumb extends Observable {
             default:
                 pX = rect[0] + rect[2] / 2.0 - opts.size / 2.0;
                 pY = rect[1] + rect[3] - opts.size / 2.0;
+                break;
         }
 
         let endPoint = new EndPoint(opts, pX, pY);
@@ -88,7 +118,7 @@ class Plumb extends Observable {
         DOMUtil.appendToNode(endPoint.element, document.querySelector(".jtk-demo-canvas"));
 
         source.addEndPoint(endPoint);
-        this.draggable(endPoint);
+        this.draggable(endPoint, "ENDPOINT");
     }
 
     /**
@@ -180,6 +210,13 @@ class Plumb extends Observable {
         }
     }
 
+    /**
+     * 添加marker箭头，连接线使用
+     *
+     * @param {String} connectorUUID
+     * @param {Array}  rect
+     * @param {String} markerType
+     */
     addMarker(connectorUUID, rect, markerType) {
         let connector = plumb.connectors[connectorUUID];
         let parentWrapper = connector.element;
