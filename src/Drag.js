@@ -24,6 +24,8 @@ const Drag = {
             Drag.dragEl.originX = evt.clientX;
             Drag.dragEl.originY = evt.clientY;
         }
+
+        console.log(evt, 11111111);
     },
 
     /**
@@ -69,6 +71,12 @@ const Drag = {
             }
 
             !isFind && Drag.setDragEl(null);
+
+            // evt.path.forEach(function(p) {
+            //     if (p.localName === "path") {
+            //         console.log(evt);
+            //     }
+            // });
 
             //手势
             if (isFind) {

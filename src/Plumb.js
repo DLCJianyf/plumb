@@ -7,6 +7,7 @@ import Drag from "./Drag";
 import Util from "./Util";
 import Render from "./Render";
 import DOMUtil from "./DOMUtil";
+import Event from "./Event";
 import Observable from "./Observable";
 
 class Plumb extends Observable {
@@ -52,6 +53,18 @@ class Plumb extends Observable {
         this.bind(document, "mousedown", Drag.dragStart);
         this.bind(document, "mousemove", Drag.dragging);
         this.bind(document, "mouseup", Drag.dragEnd);
+
+        //事件分发
+        const parent = document.querySelector(".jtk-demo-canvas");
+        this.bind(parent, "mousedown", function(evt) {
+            Event.dispatchEvent(parent, evt, "mousedown");
+        });
+        this.bind(parent, "mouseover", function(evt) {
+            Event.dispatchEvent(parent, evt, "mouseover");
+        });
+        // this.bind(parent, "mousedown", function(evt) {
+
+        // });
     }
 
     /**
@@ -161,6 +174,15 @@ class Plumb extends Observable {
                             connector.element.getElementsByTagName("path")[0],
                             connector.calcPathPointArr(width, height, bound, size)
                         );
+
+                        this.bind(
+                            connector.element.getElementsByTagName("path")[0],
+                            "mousedown",
+                            function(evt) {
+                                console.log(evt, 22222222222);
+                            }
+                        );
+
                         return uuid;
                     }
 

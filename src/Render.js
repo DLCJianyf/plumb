@@ -229,6 +229,14 @@ class Render {
         parentWrapper.removeChild(anchor.element);
     }
 
+    /**
+     * 创建连接线svg
+     *
+     * @param {Number} width
+     * @param {Number} height
+     * @param {Object} bound
+     * @param {Number} size
+     */
     static assembleConnector(width, height, bound, size) {
         //if (!connector.element) {
 
@@ -244,6 +252,15 @@ class Render {
         //}
     }
 
+    /**
+     * 更新连接线
+     *
+     * @param {Object} connector
+     * @param {Number} width
+     * @param {Number} height
+     * @param {Object} bound
+     * @param {Number} size
+     */
     static updateConnector(connector, width, height, bound, size) {
         let x = bound.minX + size / 2.0;
         let y = bound.minY + size / 2.0;
@@ -256,6 +273,11 @@ class Render {
         Render.updatePath(path, pointArr);
     }
 
+    /**
+     * 删除链接线
+     *
+     * @param {Object} connector
+     */
     static deleteConnector(connector) {
         if (connector.element) {
             let parentWrapper = document.querySelector(".jtk-demo-canvas");
@@ -263,6 +285,12 @@ class Render {
         }
     }
 
+    /**
+     * 创建marker
+     *
+     * @param {Array}  rect
+     * @param {Srting} markerType
+     */
     static assembleMarker(rect, markerType) {
         let shape;
         switch (markerType) {
