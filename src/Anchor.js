@@ -27,9 +27,14 @@ class Anchor extends Observable {
      * @param {Object} args
      */
     moved(args) {
-        let connectorUUID = plumb.addConnector(this);
-        if (connectorUUID && plumb.config.marker) {
-            plumb.addMarker(connectorUUID, this.rect.slice(), plumb.config.marker);
+        let connector = plumb.addConnector(this);
+        if (connector.uuid && plumb.config.marker) {
+            plumb.addMarker(
+                connector.uuid,
+                this.rect.slice(),
+                plumb.config.marker,
+                connector.markerId
+            );
         }
         plumb.updateConnector(this.uuid);
     }
@@ -65,9 +70,14 @@ class Anchor extends Observable {
                 );
                 if (isTwoPointIntersect) {
                     plumb.deleteConnector(endPoint, plumb.floatingEndPoint);
-                    let connectorUUID = plumb.addConnector(endPoint, plumb.floatingEndPoint.uuid);
-                    if (connectorUUID && plumb.config.marker) {
-                        plumb.addMarker(connectorUUID, this.rect.slice(), plumb.config.marker);
+                    let connector = plumb.addConnector(endPoint, plumb.floatingEndPoint.uuid);
+                    if (connector.uuid && plumb.config.marker) {
+                        plumb.addMarker(
+                            connector.uuid,
+                            this.rect.slice(),
+                            plumb.config.marker,
+                            connector.markerId
+                        );
                     }
                     plumb.trigger("connected", {
                         sourceID: plumb.floatingEndPoint.uuid,

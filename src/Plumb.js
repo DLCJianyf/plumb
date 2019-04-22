@@ -14,6 +14,7 @@ class Plumb extends Observable {
     constructor(targets, config) {
         super();
 
+        this.flag = 1;
         this.config = config;
 
         this.sources = [];
@@ -55,13 +56,13 @@ class Plumb extends Observable {
         this.bind(document, "mouseup", Drag.dragEnd);
 
         //事件分发
-        const parent = document.querySelector(".jtk-demo-canvas");
-        this.bind(parent, "mousedown", function(evt) {
-            Event.dispatchEvent(parent, evt, "mousedown");
-        });
-        this.bind(parent, "mouseover", function(evt) {
-            Event.dispatchEvent(parent, evt, "mouseover");
-        });
+        const parent = DOMUtil.find("class", "jtk-demo-canvas");
+        // this.bind(parent, "mousedown", function(evt) {
+        //     Event.dispatchEvent(parent, evt, "mousedown");
+        // });
+        // this.bind(parent, "mouseover", function(evt) {
+        //     Event.dispatchEvent(parent, evt, "mouseover");
+        // });
         // this.bind(parent, "mousedown", function(evt) {
 
         // });
@@ -128,9 +129,11 @@ class Plumb extends Observable {
 
         let endPoint = new EndPoint(opts, pX, pY);
         endPoint.element = Render.assembleEndPoint(endPoint);
-        DOMUtil.appendToNode(endPoint.element, document.querySelector(".jtk-demo-canvas"));
+        DOMUtil.appendToNode(endPoint.element, DOMUtil.find("class", "jtk-demo-canvas"));
 
         source.addEndPoint(endPoint);
+		//全局中保存一份
+        this.endPoints.push(endPoint);
         this.draggable(endPoint, "ENDPOINT");
     }
 
@@ -165,25 +168,27 @@ class Plumb extends Observable {
 
                         let { width, height, bound, size } = connector.getSizeAndBound();
                         connector.element = Render.assembleConnector(width, height, bound, size);
+                        const path = DOMUtil.find("tag", "path", connector.element);
                         DOMUtil.appendToNode(
                             connector.element,
-                            document.querySelector(".jtk-demo-canvas")
+                            DOMUtil.find("class", "jtk-demo-canvas")
                         );
 
                         Render.updatePath(
-                            connector.element.getElementsByTagName("path")[0],
+                            path,
                             connector.calcPathPointArr(width, height, bound, size)
                         );
 
-                        this.bind(
-                            connector.element.getElementsByTagName("path")[0],
-                            "mousedown",
-                            function(evt) {
-                                console.log(evt, 22222222222);
-                            }
-                        );
+                        //事件绑定
+                        //this.bind(path, "mousedown", connector.onclick.bind(connector));
+                        this.bind(path, "mouseover", function(evt) {
+                            connector.onmouseover(evt);
+                        });
+                        this.bind(path, "mouseout", function(evt) {
+                            connector.onmouseout(evt);
+                        });
 
-                        return uuid;
+                        return connector;
                     }
 
                     isBreak = true;
@@ -238,15 +243,16 @@ class Plumb extends Observable {
      * @param {String} connectorUUID
      * @param {Array}  rect
      * @param {String} markerType
+     * @param {String} markerId
      */
-    addMarker(connectorUUID, rect, markerType) {
+    addMarker(connectorUUID, rect, markerType, markerId) {
         let connector = plumb.connectors[connectorUUID];
         let parentWrapper = connector.element;
-        let marker = Render.assembleMarker(rect, markerType);
+        let marker = Render.assembleMarker(rect, markerType, markerId);
         DOMUtil.appendToNode(marker, parentWrapper);
 
-        let path = parentWrapper.getElementsByTagName("path")[0];
-        DOMUtil.setAttribute(path, "marker-end", "url(#marker-achor)");
+        const path = DOMUtil.find("tag", "path", parentWrapper);
+        DOMUtil.setAttribute(path, "marker-end", `url(#${markerId})`);
     }
 
     /**

@@ -1,4 +1,4 @@
-const Dispatch = {
+const Event = {
     /**
      * 分发事件
      *
@@ -9,30 +9,14 @@ const Dispatch = {
     dispatchEvent(parent, evt, type) {
         const me = this;
         const els = Array.prototype.slice.call(parent.children);
+        const length = els.length;
         const newEvt = this.getSimulateEvent(evt, 0, 0);
-        els.forEach(function(el) {
-            const newEvt = me.getSimulateEvent(evt, 0, 0);
-            el.dispatchEvent(newEvt);
+        els.forEach(function(el, index) {
+            if (el.localName === "svg" && index !== length - 1) {
+                const newEvt = me.getSimulateEvent(evt, 0, 0);
+                el.firstChild && el.firstChild.dispatchEvent(newEvt);
+            }
         });
-        /*let offsetLeft = -parseInt(map.div.offsetLeft),
-            offsetTop = -parseInt(map.div.offsetTop),*/
-        // let offsetX = type === "click" ? 0 : parseInt(map.layerContainerDiv.style.left),
-        //     offsetY = type === "click" ? 0 : parseInt(map.layerContainerDiv.style.top);
-        // for (let i = layers.length - 1; i >= 0; i--) {
-        //     let layerObj = layers[i];
-        //     //let isThemeLayer = layerObj.layerInf.layerType !== "VECTOR";
-        //     //let newEvt = this.getSimulateEvent(evt, isThemeLayer ? offsetX : offsetLeft, isThemeLayer ? offsetY : offsetTop);
-        //     if (layerObj.layer.visibility) {
-        //         let newEvt = this.getSimulateEvent(evt, offsetX, offsetY);
-        //         //为layer div绑定鼠标位置信息
-        //         layerObj.layer.data = {
-        //             layerX: evt.layerX,
-        //             layerY: evt.layerY
-        //         };
-        //         //事件分发到各个图层上去，假如有一个图层选中了一个要素，则此要素就是this.selectedFeature
-        //         layerObj.layer.div.dispatchEvent(newEvt);
-        //     }
-        // }
     },
 
     /**
@@ -114,4 +98,4 @@ const Dispatch = {
     mouseover(evt) {}
 };
 
-export default Dispatch;
+export default Event;

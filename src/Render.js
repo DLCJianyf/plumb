@@ -74,29 +74,14 @@ class Render {
      * @param {Number} r
      */
     static createArrow(x, y, r) {
-        let w = 2 * r;
-        let h = 2 * r;
-        let defs = DOMUtil.createElementNS(DOMUtil.ns, "defs");
-        let marker = DOMUtil.createElementNS(DOMUtil.ns, "marker", {}, null, {
-            id: "marker-achor",
-            markerUnits: "userSpaceOnUse",
-            markerWidth: w,
-            markerHeight: h,
-            viewBox: `0 0 ${w} ${h}`,
-            refX: w,
-            refY: r,
-            orient: "auto"
-        });
-        let path = DOMUtil.createElementNS(DOMUtil.ns, "path", {}, null, {
+        const w = 2 * r;
+        const h = 2 * r;
+
+        return DOMUtil.createElementNS(DOMUtil.ns, "path", {}, null, {
             d: `M0,0 L${w},${r} L0,${h} L${r},${r} L0,0`,
             fill: "gray",
             stroke: "white"
         });
-
-        DOMUtil.appendToNode(path, marker);
-        DOMUtil.appendToNode(marker, defs);
-
-        return defs;
     }
 
     /**
@@ -106,7 +91,8 @@ class Render {
         return DOMUtil.createElementNS(DOMUtil.ns, "path", {}, null, {
             fill: "none",
             stroke: "gray",
-            "stroke-width": 2
+            "stroke-width": 2,
+            "pointer-events": "auto"
         });
     }
 
@@ -225,7 +211,7 @@ class Render {
      * @param {Anchor} anchor
      */
     static deleteAnchor(anchor) {
-        let parentWrapper = document.querySelector(".jtk-demo-canvas");
+        let parentWrapper = DOMUtil.find("class", "jtk-demo-canvas");
         parentWrapper.removeChild(anchor.element);
     }
 
@@ -243,6 +229,7 @@ class Render {
         let svg = Render.createSVG(width, height, {
             left: `${bound.minX + size / 2.0}px`,
             top: `${bound.minY + size / 2.0}px`,
+            "pointer-events": "none",
             overflow: "visible",
             "z-index": 10
         });
@@ -269,7 +256,7 @@ class Render {
         DOMUtil.sizeElement(connector.element, x, y, width, height);
 
         let pointArr = connector.calcPathPointArr(width, height, bound, size);
-        let path = connector.element.getElementsByTagName("path")[0];
+        let path = DOMUtil.find("tag", "path", connector.element);
         Render.updatePath(path, pointArr);
     }
 
@@ -280,7 +267,7 @@ class Render {
      */
     static deleteConnector(connector) {
         if (connector.element) {
-            let parentWrapper = document.querySelector(".jtk-demo-canvas");
+            let parentWrapper = DOMUtil.find("class", "jtk-demo-canvas");
             parentWrapper.removeChild(connector.element);
         }
     }
@@ -289,22 +276,46 @@ class Render {
      * 创建marker
      *
      * @param {Array}  rect
-     * @param {Srting} markerType
+     * @param {String} markerType
+     * @param {String} markerId
      */
-    static assembleMarker(rect, markerType) {
+    static assembleMarker(rect, markerType, markerId) {
+        const size = rect[2];
+        const r = size / 2;
+        const x = r;
+        const y = r;
+        const w = size;
+        const h = size;
+
+        const defs = DOMUtil.createElementNS(DOMUtil.ns, "defs");
+        const marker = DOMUtil.createElementNS(DOMUtil.ns, "marker", {}, null, {
+            id: markerId,
+            markerUnits: "userSpaceOnUse",
+            markerWidth: w,
+            markerHeight: h,
+            viewBox: `0 0 ${w} ${h}`,
+            refX: w,
+            refY: r,
+            orient: "auto"
+        });
+
         let shape;
         switch (markerType) {
             case "ARROW":
-                shape = Render.createArrow(rect[2] / 2.0, rect[2] / 2.0, rect[2] / 2.0);
+                shape = Render.createArrow(x, y, r);
                 break;
             case "star":
                 break;
 
             default:
-                shape = Render.createArrow(rect[2] / 2.0, rect[2] / 2.0, rect[2] / 2.0);
+                shape = Render.createArrow(x, y, r);
                 break;
         }
-        return shape;
+
+        DOMUtil.appendToNode(shape, marker);
+        DOMUtil.appendToNode(marker, defs);
+
+        return defs;
     }
 }
 

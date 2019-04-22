@@ -1,4 +1,5 @@
 import Util from "./Util";
+import DOMUtil from "./DOMUtil";
 
 /**
  * 连接线，SVG
@@ -8,6 +9,7 @@ class Connector {
         this.sourceEndPoint = sourceEndPoint;
         this.targetEndPoint = targetEndPoint;
         this.uuid = `${sourceEndPoint.uuid}^-^${targetEndPoint.uuid}`;
+        this.markerId = `marker-achor-${plumb.flag++}`;
     }
 
     /**
@@ -40,8 +42,8 @@ class Connector {
     getPointSize() {
         return this.getSource().getRect()[2] || 0;
     }
-	
-	/**
+
+    /**
      * 获取连接线大小及外界矩形
      */
     getSizeAndBound() {
@@ -56,6 +58,63 @@ class Connector {
             height,
             bound
         };
+    }
+
+    /**
+     * 点击
+     *
+     * @param {Object} evt
+     */
+    onclick(evt) {
+        console.log(22222222222222);
+    }
+
+    /**
+     * 鼠标hover时间
+     *
+     * @param {Object} evt
+     */
+    onmouseover(evt) {
+        const paths = DOMUtil.find("tag", "path", this.element, true);
+        DOMUtil.setAttributes(paths[0], { stroke: "orange", "stroke-width": 4 });
+        DOMUtil.setAttributes(paths[1], { fill: "orange" });
+
+        this.uuid.split("^-^").forEach(function(id) {
+            let find = false;
+            plumb.endPoints.forEach(function(p) {
+                if (!find) {
+                    if (p.uuid === id) {
+                        find = true;
+                        const circle = DOMUtil.find("tag", "circle", p.element);
+                        DOMUtil.setAttributes(circle, { fill: "orange" });
+                    }
+                }
+            });
+        });
+    }
+
+    /**
+     * 鼠标移出
+     *
+     * @param {Object} evt
+     */
+    onmouseout(evt) {
+        const paths = DOMUtil.find("tag", "path", this.element, true);
+        DOMUtil.setAttributes(paths[0], { stroke: "gray", "stroke-width": 2 });
+        DOMUtil.setAttributes(paths[1], { fill: "gray" });
+
+        this.uuid.split("^-^").forEach(function(id) {
+            let find = false;
+            plumb.endPoints.forEach(function(p) {
+                if (!find) {
+                    if (p.uuid === id) {
+                        find = true;
+                        const circle = DOMUtil.find("tag", "circle", p.element);
+                        DOMUtil.setAttributes(circle, { fill: "gray" });
+                    }
+                }
+            });
+        });
     }
 
     /**

@@ -1,5 +1,6 @@
 import Render from "./Render";
 import Util from "./Util";
+import DOMUtil from "./DOMUtil";
 
 const Drag = {
     isDown: false,
@@ -24,8 +25,6 @@ const Drag = {
             Drag.dragEl.originX = evt.clientX;
             Drag.dragEl.originY = evt.clientY;
         }
-
-        console.log(evt, 11111111);
     },
 
     /**
@@ -54,6 +53,7 @@ const Drag = {
             }
         } else {
             let isFind = false;
+            //优先从节点中找
             plumb.draggableEls.SOURCE.forEach(function(el) {
                 if (!isFind) {
                     isFind = Util.isInRect({ x: evt.clientX, y: evt.clientY }, el.getRect());
@@ -72,19 +72,8 @@ const Drag = {
 
             !isFind && Drag.setDragEl(null);
 
-            // evt.path.forEach(function(p) {
-            //     if (p.localName === "path") {
-            //         console.log(evt);
-            //     }
-            // });
-
             //手势
-            if (isFind) {
-                //console.log(Drag.dragEl, 1111111);
-                document.body.style.cursor = "pointer";
-            } else {
-                document.body.style.cursor = "default";
-            }
+            DOMUtil.cursor(isFind);
         }
     },
 

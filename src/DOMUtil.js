@@ -128,6 +128,61 @@ const DOMUtil = {
     },
 
     /**
+     * 插入之前
+     *
+     * @param {Object} newelement
+     * @param {Object} targetelement
+     */
+    insertBefore(newelement, targetelement) {
+        var parentelement = targetelement.parentNode;
+        parentelement.insertBefore(newelement, targetelement);
+    },
+
+    /**
+     * 插入之后
+     *
+     * @param {Object} newelement
+     * @param {Object} targetelement
+     */
+    insertAfter(newelement, targetelement) {
+        var parentelement = targetelement.parentNode;
+        if (parentelement.lastChild == targetelement) {
+            parentelement.appendChild(newelement);
+        } else {
+            parentelement.insertBefore(newelement, targetelement.nextSilbing);
+        }
+    },
+
+    /**
+     * 获取dom节点
+     *
+     * @param {String}  tag
+     * @param {String}  name
+     * @param {Object}  parent
+     * @param {Boolean} all
+     */
+    find(tag, name, parent, all) {
+        parent = parent || document;
+
+        if (tag === "tag") {
+            return all ? parent.getElementsByTagName(name) : parent.getElementsByTagName(name)[0];
+        } else if (tag === "class") {
+            return parent.getElementsByClassName(name)[0];
+        } else {
+            return parent.getElementById(name);
+        }
+    },
+
+    /**
+     * 鼠标手势
+     *
+     * @param {Boolean} isShow
+     */
+    cursor(isShow) {
+        document.body.style.cursor = isShow ? "pointer" : "default";
+    },
+
+    /**
      * 获取element大小
      *
      * @param {HTMLElement} el
