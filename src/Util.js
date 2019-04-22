@@ -140,6 +140,15 @@ class Util {
             return v.toString(16);
         });
     }
+
+    static findItemByUUID(arr, id) {
+        for (let elem of arr) {
+            if (elem.uuid === id) {
+                return elem;
+            }
+        }
+        return null;
+    }
 }
 
 export default Util;

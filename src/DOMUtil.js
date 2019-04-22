@@ -154,6 +154,15 @@ const DOMUtil = {
     },
 
     /**
+     * 删除
+     *
+     * @param {Object} elem
+     */
+    delete(elem) {
+        elem.parentNode.removeChild(elem);
+    },
+
+    /**
      * 获取dom节点
      *
      * @param {String}  tag

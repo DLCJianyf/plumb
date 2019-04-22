@@ -66,6 +66,26 @@ class EndPoint extends Observable {
             Drag.setDragEl(plumb.floatingEndPoint);
         }
     }
+
+    /**
+     * 鼠标hover时间
+     *
+     * @param {Object} evt
+     */
+    onmouseover(evt) {
+        const path = DOMUtil.find("tag", "circle", this.element);
+        DOMUtil.setAttributes(path, { fill: "orange" });
+    }
+
+    /**
+     * 鼠标移出
+     *
+     * @param {Object} evt
+     */
+    onmouseout(evt) {
+        const path = DOMUtil.find("tag", "circle", this.element);
+        DOMUtil.setAttributes(path, { fill: "gray" });
+    }
 }
 
 export default EndPoint;

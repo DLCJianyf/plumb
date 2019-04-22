@@ -66,7 +66,17 @@ class Connector {
      * @param {Object} evt
      */
     onclick(evt) {
-        console.log(22222222222222);
+        if (window.confirm("是否删除连接线?")) {
+            let uuid = this.uuid;
+            delete plumb.connectors[uuid];
+            DOMUtil.delete(this.element);
+
+            this.uuid.split("^-^").forEach(function(id) {
+                const p = Util.findItemByUUID(plumb.endPoints, id);
+                const circle = DOMUtil.find("tag", "circle", p.element);
+                DOMUtil.setAttributes(circle, { fill: "gray" });
+            });
+        }
     }
 
     /**
@@ -80,16 +90,9 @@ class Connector {
         DOMUtil.setAttributes(paths[1], { fill: "orange" });
 
         this.uuid.split("^-^").forEach(function(id) {
-            let find = false;
-            plumb.endPoints.forEach(function(p) {
-                if (!find) {
-                    if (p.uuid === id) {
-                        find = true;
-                        const circle = DOMUtil.find("tag", "circle", p.element);
-                        DOMUtil.setAttributes(circle, { fill: "orange" });
-                    }
-                }
-            });
+            const p = Util.findItemByUUID(plumb.endPoints, id);
+            const circle = DOMUtil.find("tag", "circle", p.element);
+            DOMUtil.setAttributes(circle, { fill: "orange" });
         });
     }
 
@@ -104,16 +107,9 @@ class Connector {
         DOMUtil.setAttributes(paths[1], { fill: "gray" });
 
         this.uuid.split("^-^").forEach(function(id) {
-            let find = false;
-            plumb.endPoints.forEach(function(p) {
-                if (!find) {
-                    if (p.uuid === id) {
-                        find = true;
-                        const circle = DOMUtil.find("tag", "circle", p.element);
-                        DOMUtil.setAttributes(circle, { fill: "gray" });
-                    }
-                }
-            });
+            const p = Util.findItemByUUID(plumb.endPoints, id);
+            const circle = DOMUtil.find("tag", "circle", p.element);
+            DOMUtil.setAttributes(circle, { fill: "gray" });
         });
     }
 

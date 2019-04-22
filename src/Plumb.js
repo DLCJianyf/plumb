@@ -131,8 +131,12 @@ class Plumb extends Observable {
         endPoint.element = Render.assembleEndPoint(endPoint);
         DOMUtil.appendToNode(endPoint.element, DOMUtil.find("class", "jtk-demo-canvas"));
 
+        //事件绑定
+        this.bind(endPoint.element, "mouseover", endPoint.onmouseover.bind(endPoint));
+        this.bind(endPoint.element, "mouseout", endPoint.onmouseout.bind(endPoint));
+
         source.addEndPoint(endPoint);
-		//全局中保存一份
+        //全局中保存一份
         this.endPoints.push(endPoint);
         this.draggable(endPoint, "ENDPOINT");
     }
@@ -180,13 +184,9 @@ class Plumb extends Observable {
                         );
 
                         //事件绑定
-                        //this.bind(path, "mousedown", connector.onclick.bind(connector));
-                        this.bind(path, "mouseover", function(evt) {
-                            connector.onmouseover(evt);
-                        });
-                        this.bind(path, "mouseout", function(evt) {
-                            connector.onmouseout(evt);
-                        });
+                        this.bind(path, "click", connector.onclick.bind(connector));
+                        this.bind(path, "mouseover", connector.onmouseover.bind(connector));
+                        this.bind(path, "mouseout", connector.onmouseout.bind(connector));
 
                         return connector;
                     }
