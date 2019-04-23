@@ -34,10 +34,10 @@ class Util {
 
     static getBoundByRect(rect1, rect2) {
         return {
-            minX: Util.min(rect1[0], rect2[0]),
-            minY: Util.min(rect1[1], rect2[1]),
-            maxX: Util.max(rect1[0], rect2[0]),
-            maxY: Util.max(rect1[1], rect2[1])
+            minX: Util.min(rect1.x, rect2.x),
+            minY: Util.min(rect1.y, rect2.y),
+            maxX: Util.max(rect1.x, rect2.x),
+            maxY: Util.max(rect1.y, rect2.y)
         };
     }
 
@@ -57,13 +57,13 @@ class Util {
     }
 
     static isInRect(p, rect) {
-        return p.x > rect[0] && p.x < rect[0] + rect[2] && p.y > rect[1] && p.y < rect[1] + rect[3];
+        return p.x > rect.x && p.x < rect.x + rect.w && p.y > rect.y && p.y < rect.y + rect.h;
     }
 
     static isInCircle(p, rect) {
-        let dis = Util.distanceLine(p, { x: rect[0], y: rect[1] });
+        let dis = Util.distanceLine(p, { x: rect.x, y: rect.y });
 
-        return dis <= rect[2];
+        return dis <= rect.w;
     }
 
     /**
@@ -94,10 +94,24 @@ class Util {
         }
     }
 
+    /**
+     * 获取元素位置，大小信息
+     *
+     * @param {*} element
+     */
     static getElementRectInfo(element) {
-        return ["offsetLeft", "offsetTop", "offsetWidth", "offsetHeight"].map(function(attrName) {
+        const info = ["offsetLeft", "offsetTop", "offsetWidth", "offsetHeight"].map(function(
+            attrName
+        ) {
             return element[attrName] || 0;
         });
+
+        return {
+            x: info[0],
+            y: info[1],
+            w: info[2],
+            h: info[3]
+        };
     }
 
     /**

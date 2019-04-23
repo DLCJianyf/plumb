@@ -106,24 +106,24 @@ class Plumb extends Observable {
         let rect = source.getRect();
         switch (opts.anchor) {
             case "top":
-                pX = rect[0] + rect[2] / 2.0 - opts.size / 2.0;
-                pY = rect[1] + -opts.size / 2.0;
+                pX = rect.x + rect.w / 2 - opts.size / 2;
+                pY = rect.y - opts.size / 2;
                 break;
             case "bottom":
-                pX = rect[0] + rect[2] / 2.0 - opts.size / 2.0;
-                pY = rect[1] + rect[3] - opts.size / 2.0;
+                pX = rect.x + rect.w / 2 - opts.size / 2;
+                pY = rect.y + rect.h - opts.size / 2;
                 break;
             case "left":
-                pX = rect[0] - opts.size / 2.0;
-                pY = rect[1] + rect[3] / 2.0 - opts.size / 2.0;
+                pX = rect.x - opts.size / 2;
+                pY = rect.y + rect.h / 2 - opts.size / 2;
                 break;
             case "right":
-                pX = rect[0] + rect[2] - opts.size / 2.0;
-                pY = rect[1] + rect[3] / 2.0 - opts.size / 2.0;
+                pX = rect.x + rect.w - opts.size / 2;
+                pY = rect.y + rect.h / 2 - opts.size / 2;
                 break;
             default:
-                pX = rect[0] + rect[2] / 2.0 - opts.size / 2.0;
-                pY = rect[1] + rect[3] - opts.size / 2.0;
+                pX = rect.x + rect.w / 2 - opts.size / 2;
+                pY = rect.y + rect.h - opts.size / 2;
                 break;
         }
 
@@ -157,7 +157,7 @@ class Plumb extends Observable {
      * 添加连接线
      *
      * @param {EndPoint} targetEndPoint
-     * @param {String} sourceID
+     * @param {String}   sourceID
      */
     addConnector(targetEndPoint, sourceID) {
         let isBreak = false;
@@ -171,7 +171,13 @@ class Plumb extends Observable {
                         plumb.connectors[uuid] = connector;
 
                         let { width, height, bound, size } = connector.getSizeAndBound();
-                        connector.element = Render.assembleConnector(width, height, bound, size);
+                        connector.element = Render.assembleConnector(
+                            width,
+                            height,
+                            bound,
+                            size,
+                            plumb.config.strokeWidth
+                        );
                         const path = DOMUtil.find("tag", "path", connector.element);
                         DOMUtil.appendToNode(
                             connector.element,

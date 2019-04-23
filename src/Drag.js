@@ -40,13 +40,13 @@ const Drag = {
                 let $Y = evt.clientY - target.originY;
 
                 if (target.type !== "END_POINT") {
-                    target.rect[0] += $X;
-                    target.rect[1] += $Y;
+                    target.rect.x += $X;
+                    target.rect.y += $Y;
 
                     target.originX = evt.clientX;
                     target.originY = evt.clientY;
 
-                    Render.updatePosition(target.element, target.rect[0], target.rect[1]);
+                    Render.updatePosition(target.element, target.rect.x, target.rect.y);
                 }
 
                 target.trigger("moved", { $X, $Y });

@@ -86,12 +86,14 @@ class Render {
 
     /**
      * 创建SVG路径
+     *
+     * @param {Number} strokeWidth
      */
-    static createPath() {
+    static createPath(strokeWidth) {
         return DOMUtil.createElementNS(DOMUtil.ns, "path", {}, null, {
             fill: "none",
             stroke: "gray",
-            "stroke-width": 2,
+            "stroke-width": strokeWidth || 2,
             "pointer-events": "auto"
         });
     }
@@ -136,17 +138,17 @@ class Render {
         //if (!endPoint.element) {
         let rect = endPoint.getRect();
         let div = Render.createDiv(endPoint.uuid, "endpoint", {
-            left: `${rect[0]}px`,
-            top: `${rect[1]}px`,
-            width: `${rect[2]}px`,
-            height: `${rect[3]}px`
+            left: `${rect.x}px`,
+            top: `${rect.y}px`,
+            width: `${rect.w}px`,
+            height: `${rect.h}px`
         });
-        let svg = Render.createSVG(rect[2], rect[3], {
+        let svg = Render.createSVG(rect.w, rect.h, {
             left: "0px",
             top: "0px",
             opacity: 0.8
         });
-        let circle = Render.createCircle(rect[2] / 2.0, rect[2] / 2.0, rect[2] / 2.0);
+        let circle = Render.createCircle(rect.w / 2, rect.w / 2, rect.w / 2);
 
         DOMUtil.appendToNode(circle, svg);
         DOMUtil.appendToNode(svg, div);
@@ -163,17 +165,17 @@ class Render {
         //if (!anchor.element) {
         let rect = anchor.getRect();
         let div = Render.createDiv(anchor.uuid, "anchor", {
-            left: `${rect[0]}px`,
-            top: `${rect[1]}px`,
-            width: `${rect[2]}px`,
-            height: `${rect[3]}px`
+            left: `${rect.x}px`,
+            top: `${rect.y}px`,
+            width: `${rect.w}px`,
+            height: `${rect.h}px`
         });
-        let svg = Render.createSVG(rect[2], rect[3], {
+        let svg = Render.createSVG(rect.w, rect.h, {
             left: "0px",
             top: "0px",
             opacity: 0.8
         });
-        let shape = Render.createCircle(rect[2] / 2.0, rect[2] / 2.0, rect[2] / 2.0);
+        let shape = Render.createCircle(rect.w / 2, rect.h / 2, rect.w / 2);
         // switch (anchor.shape) {
         //     case "ARROW":
         //         shape = Render.createArrow(
@@ -222,18 +224,19 @@ class Render {
      * @param {Number} height
      * @param {Object} bound
      * @param {Number} size
+     * @param {Number} strokeWidth
      */
-    static assembleConnector(width, height, bound, size) {
+    static assembleConnector(width, height, bound, size, strokeWidth) {
         //if (!connector.element) {
 
         let svg = Render.createSVG(width, height, {
-            left: `${bound.minX + size / 2.0}px`,
-            top: `${bound.minY + size / 2.0}px`,
+            left: `${bound.minX + size / 2}px`,
+            top: `${bound.minY + size / 2}px`,
             "pointer-events": "none",
             overflow: "visible",
             "z-index": 10
         });
-        let path = Render.createPath();
+        let path = Render.createPath(strokeWidth);
         svg.appendChild(path);
         return svg;
         //}
@@ -249,8 +252,8 @@ class Render {
      * @param {Number} size
      */
     static updateConnector(connector, width, height, bound, size) {
-        let x = bound.minX + size / 2.0;
-        let y = bound.minY + size / 2.0;
+        let x = bound.minX + size / 2;
+        let y = bound.minY + size / 2;
 
         //Render.updateSVG(connector.element, width, height, x, y);
         DOMUtil.sizeElement(connector.element, x, y, width, height);
@@ -280,7 +283,7 @@ class Render {
      * @param {String} markerId
      */
     static assembleMarker(rect, markerType, markerId) {
-        const size = rect[2];
+        const size = rect.w;
         const r = size / 2;
         const x = r;
         const y = r;

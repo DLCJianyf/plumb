@@ -31,7 +31,7 @@ class Anchor extends Observable {
         if (connector.uuid && plumb.config.marker) {
             plumb.addMarker(
                 connector.uuid,
-                this.rect.slice(),
+                Object.assign({}, this.rect),
                 plumb.config.marker,
                 connector.markerId
             );
@@ -58,14 +58,14 @@ class Anchor extends Observable {
                 let rect = endPoint.getRect();
                 let isTwoPointIntersect = Util.isCircleIntersect(
                     {
-                        x: rect[0],
-                        y: rect[1],
-                        r: rect[2] / 2.0
+                        x: rect.x,
+                        y: rect.y,
+                        r: rect.w / 2
                     },
                     {
-                        x: rect1[0],
-                        y: rect1[1],
-                        r: rect1[2] / 2.0
+                        x: rect1.x,
+                        y: rect1.y,
+                        r: rect1.w / 2
                     }
                 );
                 if (isTwoPointIntersect) {
@@ -74,7 +74,7 @@ class Anchor extends Observable {
                     if (connector.uuid && plumb.config.marker) {
                         plumb.addMarker(
                             connector.uuid,
-                            this.rect.slice(),
+                            Object.assign({}, this.rect),
                             plumb.config.marker,
                             connector.markerId
                         );

@@ -56,7 +56,7 @@ class Source extends Observable {
     moved(args) {
         this.endPoints.forEach(item => {
             item.updatePosition(args.$X, args.$Y);
-            Render.updatePosition(item.element, item.rect[0], item.rect[1]);
+            Render.updatePosition(item.element, item.rect.x, item.rect.y);
         });
     }
 }

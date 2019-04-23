@@ -16,7 +16,8 @@ class EndPoint extends Observable {
         this.uuid = opt.uuid;
         this.anchor = opt.anchor;
         this.originX = this.originY = 0;
-        this.rect = [x, y, opt.size, opt.size];
+        this.rect = { x: x, y: y, w: opt.size, h: opt.size };
+        //this.rect = [x, y, opt.size, opt.size];
         this.isMouseDown = false;
 
         this.on("moved", this.moved, this);
@@ -36,8 +37,8 @@ class EndPoint extends Observable {
      * @param {Number} $Y
      */
     updatePosition($X, $Y) {
-        this.rect[0] += $X;
-        this.rect[1] += $Y;
+        this.rect.x += $X;
+        this.rect.y += $Y;
 
         plumb.updateConnector(this.uuid);
     }
@@ -50,7 +51,7 @@ class EndPoint extends Observable {
     moved(args) {
         if (!plumb.floatingEndPoint) {
             plumb.floatingEndPoint = plumb.createFloatingEndPoint(
-                this.rect.slice(0),
+                Object.assign({}, this.rect),
                 this.uuid,
                 this.originX,
                 this.originY

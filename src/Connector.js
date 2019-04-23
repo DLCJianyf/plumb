@@ -40,7 +40,7 @@ class Connector {
      * 获取锚点大小
      */
     getPointSize() {
-        return this.getSource().getRect()[2] || 0;
+        return this.getSource().getRect().w || 0;
     }
 
     /**
@@ -86,7 +86,10 @@ class Connector {
      */
     onmouseover(evt) {
         const paths = DOMUtil.find("tag", "path", this.element, true);
-        DOMUtil.setAttributes(paths[0], { stroke: "orange", "stroke-width": 4 });
+        DOMUtil.setAttributes(paths[0], {
+            stroke: "orange",
+            "stroke-width": plumb.config.strokeWidth + 2
+        });
         DOMUtil.setAttributes(paths[1], { fill: "orange" });
 
         this.uuid.split("^-^").forEach(function(id) {
@@ -103,7 +106,10 @@ class Connector {
      */
     onmouseout(evt) {
         const paths = DOMUtil.find("tag", "path", this.element, true);
-        DOMUtil.setAttributes(paths[0], { stroke: "gray", "stroke-width": 2 });
+        DOMUtil.setAttributes(paths[0], {
+            stroke: "gray",
+            "stroke-width": plumb.config.strokeWidth
+        });
         DOMUtil.setAttributes(paths[1], { fill: "gray" });
 
         this.uuid.split("^-^").forEach(function(id) {
@@ -160,7 +166,7 @@ class Connector {
         let rect2 = this.getTarget().getRect();
 
         if (sourceP.anchor === "right" || sourceP.anchor === "bottom") {
-            if (rect1[0] < rect2[0]) {
+            if (rect1.x < rect2.x) {
                 p1.push(minX);
                 p2.push(minX + thresoldX);
                 p3.push(maxX - thresoldX);
@@ -172,7 +178,7 @@ class Connector {
                 p4.push(minX);
             }
         } else {
-            if (rect1[0] > rect2[0]) {
+            if (rect1.x > rect2.x) {
                 p1.push(maxX);
                 p2.push(maxX - thresoldX);
                 p3.push(minX + thresoldX);
@@ -185,7 +191,7 @@ class Connector {
             }
         }
 
-        if (rect1[1] === bound.minY) {
+        if (rect1.y === bound.minY) {
             p1.push(minY);
             p2.push(minY + thresoldY);
             p3.push(maxY - thresoldY);
@@ -220,7 +226,7 @@ class Connector {
 
         let rect = this.getSource().getRect();
 
-        if (rect[0] === bound.minX) {
+        if (rect.x === bound.minX) {
             p1.push(minX);
             p2.push(maxX);
         } else {
@@ -228,7 +234,7 @@ class Connector {
             p2.push(minX);
         }
 
-        if (rect[1] === bound.minY) {
+        if (rect.y === bound.minY) {
             p1.push(minY);
             p2.push(maxY);
         } else {
@@ -274,7 +280,7 @@ class Connector {
                 break;
         }
 
-        if (rect1[0] === bound.minX) {
+        if (rect1.x === bound.minX) {
             p1.push(minX);
             p2.push(minX);
             p3.push(maxX);
@@ -284,7 +290,7 @@ class Connector {
             p3.push(minX);
         }
 
-        if (rect1[1] === bound.minY) {
+        if (rect1.y === bound.minY) {
             p1.push(minY);
             p2.push(maxY);
             p3.push(maxY);
