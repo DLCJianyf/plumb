@@ -1,3 +1,5 @@
+import Link from "./Link";
+
 import Util from "./Util";
 import DOMUtil from "./DOMUtil";
 
@@ -263,22 +265,10 @@ class Connector {
         let minX = 0;
         let minY = 0;
 
-        let sourceP = this.getSource();
-        let rect1 = sourceP.getRect();
-        let rect2 = this.getTarget().getRect();
-
-        switch (sourceP.anchor) {
-            case "left":
-                break;
-            case "right":
-                break;
-            case "top":
-                break;
-            case "bottom":
-                break;
-            default:
-                break;
-        }
+        let souE = this.getSource();
+        let tarE = this.getTarget();
+        let rect1 = souE.getRect();
+        let rect2 = tarE.getRect();
 
         if (rect1.x === bound.minX) {
             p1.push(minX);
@@ -300,7 +290,43 @@ class Connector {
             p3.push(minY);
         }
 
-        return [p1, p2, p3];
+        let sou = Util.findSourceByAchor(plumb.sources, souE);
+        let tar = Util.findSourceByAchor(plumb.sources, tarE);
+        let r1 = sou.getRect();
+        let r2 = tar.getRect();
+
+        //参数转换以适配流程线的计算
+        let link = {
+            from: {
+                id: souE.type === "ANCHOR" ? null : souE.uuid,
+                x: p1[0],
+                y: p1[1],
+                w: r1.w,
+                h: r1.h,
+                type: souE.type,
+                anchor: souE.anchor
+            },
+
+            to: {
+                id: tarE.type === "ANCHOR" ? null : tarE.uuid,
+                x: p3[0],
+                y: p3[1],
+                w: r2.w,
+                h: r2.h,
+                type: tarE.type,
+                anchor: tarE.anchor
+            }
+        };
+
+        let linkerPoints = Link.getFlowPoints(link);
+        linkerPoints = linkerPoints.map(function(a) {
+            return [a.x, a.y];
+        });
+
+        let results = [p1];
+        results = results.concat(linkerPoints);
+        results.push(p3);
+        return results;
     }
 }
 

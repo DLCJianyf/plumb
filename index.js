@@ -5,7 +5,7 @@ let sources = document.getElementsByClassName("window");
 window.plumb = new Plumb(sources, {
     marker: "ARROW",
     lineDashType: "SOLID",
-    lineType: "BEZIER",
+    lineType: "FLOW",
     strokeWidth: 2
 });
 

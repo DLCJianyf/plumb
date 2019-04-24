@@ -163,6 +163,17 @@ class Util {
         }
         return null;
     }
+
+    static findSourceByAchor(sous, achor) {
+        for (let sou of sous) {
+            for (let ach of sou.endPoints) {
+                if (ach.uuid === achor.uuid) {
+                    return sou;
+                }
+            }
+        }
+        return null;
+    }
 }
 
 export default Util;
