@@ -62,7 +62,7 @@ const Link = {
 
         var width = Math.abs(to.x - from.x);
         var height = Math.abs(to.y - from.y);
-        var r = 30;
+        var r = 40;
         if (from.id != null && to.id != null) {
             var fromDir = this.getAngleDir(from.angle);
             var toDir = this.getAngleDir(to.angle);
