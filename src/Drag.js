@@ -75,7 +75,7 @@ const Drag = {
             !isFind && Drag.setDragEl(null);
 
             //手势
-            DOMUtil.cursor(isFind);
+            // DOMUtil.cursor(isFind);
         }
     },
 

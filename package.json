@@ -5,7 +5,7 @@
     "main": "index.js",
     "babel": {
         "presets": [
-            "env"
+            "es2015"
         ]
     },
     "scripts": {

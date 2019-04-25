@@ -1,6 +1,7 @@
 import Util from "./Util";
 import Render from "./Render";
 import Observable from "./Observable";
+import Drag from "./Drag";
 
 /**
  * 可拖动窗体
@@ -60,7 +61,7 @@ class Source extends Observable {
             Render.updatePosition(item.element, item.rect.x, item.rect.y);
         });
 
-        if (plumb.config.useGuideLine) this.calGuideLine();
+        if (plumb.config.useGuideLine && Drag.dragEl) this.calGuideLine();
     }
 
     /**
