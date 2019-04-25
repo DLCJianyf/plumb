@@ -3,12 +3,13 @@ import Source from "./Source";
 import EndPoint from "./EndPoint";
 import Connector from "./Connector";
 import GuideLine from "./GuideLine";
+import Grid from "./Grid";
 
 import Drag from "./Drag";
 import Util from "./Util";
 import Render from "./Render";
 import DOMUtil from "./DOMUtil";
-import Event from "./Event";
+import EleResize from "./EleResize";
 import Observable from "./Observable";
 
 class Plumb extends Observable {
@@ -28,13 +29,17 @@ class Plumb extends Observable {
             ENDPOINT: []
         };
 
-        this.tolerant = 4;
+        this.tolerant = 2;
         this.guidLineH = null;
         this.guidLineV = null;
 
+        this.wrapper = DOMUtil.find("class", "jtk-demo-main");
+
         this.init(targets);
         this.initEvents();
+        this.initResizeEvent();
         if (this.config.useGuideLine) this.initGuideLine();
+        if (this.config.useGrid) this.initGrid();
     }
 
     /**
@@ -63,13 +68,35 @@ class Plumb extends Observable {
     }
 
     /**
+     * 初始化resize事件
+     */
+    initResizeEvent() {
+        EleResize.on(this.wrapper, this.handleResize.bind(this));
+    }
+
+    /**
      * 初始化辅助线
      */
     initGuideLine() {
         this.guidLineH = new GuideLine("horizontal");
         this.guidLineV = new GuideLine("vertical");
-        DOMUtil.appendToNode(this.guidLineH.element);
-        DOMUtil.appendToNode(this.guidLineV.element);
+        DOMUtil.appendToNode(this.guidLineH.element, this.wrapper);
+        DOMUtil.appendToNode(this.guidLineV.element, this.wrapper);
+    }
+
+    /**
+     * 初始化背景网格
+     */
+    initGrid() {
+        this.grid = new Grid(this.config.padding);
+        DOMUtil.insertBefore(this.grid.element, this.wrapper.firstChild);
+    }
+
+    /**
+     * dom元素大小变化
+     */
+    handleResize(mutations, observer) {
+        this.grid.trigger("resize");
     }
 
     /**

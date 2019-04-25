@@ -7,7 +7,9 @@ window.plumb = new Plumb(sources, {
     lineDashType: "SOLID",
     lineType: "FLOW",
     strokeWidth: 2,
-    useGuideLine: true
+    padding: 20,
+    useGuideLine: true,
+    useGrid: true
 });
 
 plumb.getSources().forEach(function(source) {

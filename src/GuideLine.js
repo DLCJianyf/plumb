@@ -19,11 +19,14 @@ class GuideLine extends Observable {
     create() {
         const style = {
             position: "absolute",
-            left: "0px",
-            top: "0px",
+            left: "0",
+            top: "0",
             width: "100%",
             height: "1px",
-            background: "rgb(110, 117, 234)",
+            margin: "0",
+            padding: "0",
+            background: "rgb(110, 177, 234)",
+            "pointer-events": "none",
             zIndex: "100",
             transform: "translate(0, 0)",
             visibility: "hidden"
