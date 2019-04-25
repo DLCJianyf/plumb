@@ -25,6 +25,7 @@ class GuideLine extends Observable {
             height: "1px",
             background: "rgb(110, 117, 234)",
             zIndex: "100",
+            transform: "translate(0, 0)",
             visibility: "hidden"
         };
 
@@ -49,14 +50,17 @@ class GuideLine extends Observable {
      * @param {String} y
      */
     show(x, y) {
-        DOMUtil.setStyle(this.element, { visibility: "visible", left: x, top: y });
+        DOMUtil.setStyle(this.element, {
+            visibility: "visible",
+            transform: `translate(${x}, ${y})`
+        });
     }
 
     /**
      * 隐藏
      */
     hide() {
-        DOMUtil.setStyle(this.element, { visibility: "hidden", left: 0, top: 0 });
+        DOMUtil.setStyle(this.element, { visibility: "hidden", transform: "translate(0, 0)" });
     }
 }
 

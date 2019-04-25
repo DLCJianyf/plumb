@@ -136,7 +136,7 @@ class Source extends Observable {
             } else {
                 y = v.b.p;
             }
-            infos.push({ type: "horizontal", x: 0, y: y });
+            infos.push({ type: "horizontal", x: 0, y: parseInt(y) });
         }
 
         const minH = Util.min(h.l.abs, h.lm.abs, h.r.abs);
@@ -149,7 +149,7 @@ class Source extends Observable {
             } else {
                 x = h.r.p;
             }
-            infos.push({ type: "vertical", x: x, y: 0 });
+            infos.push({ type: "vertical", x: parseInt(x), y: 0 });
         }
 
         plumb.showGuide(infos);
