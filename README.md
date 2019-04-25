@@ -16,4 +16,8 @@ README
 
 ![image](https://github.com/DLCJianyf/plumb/blob/master/img/3333.png)
 
+# 辅助线
+
+![image](https://github.com/DLCJianyf/plumb/blob/master/img/5555.png)
+
 ![image](https://github.com/DLCJianyf/plumb/blob/master/img/11111.gif)

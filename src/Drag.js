@@ -3,7 +3,9 @@ import Util from "./Util";
 import DOMUtil from "./DOMUtil";
 
 const Drag = {
+    //鼠标是否按下
     isDown: false,
+    //当前拖拽目标
     dragEl: null,
 
     /**
@@ -35,9 +37,9 @@ const Drag = {
     dragging(evt) {
         if (Drag.isDown) {
             if (Drag.dragEl) {
-                let target = Drag.dragEl;
-                let $X = evt.clientX - target.originX;
-                let $Y = evt.clientY - target.originY;
+                const target = Drag.dragEl;
+                const $X = evt.clientX - target.originX;
+                const $Y = evt.clientY - target.originY;
 
                 if (target.type !== "END_POINT") {
                     target.rect.x += $X;

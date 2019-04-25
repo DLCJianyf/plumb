@@ -4,18 +4,48 @@ import DOMUtil from "./DOMUtil";
  * 工具类，静态方法
  */
 class Util {
-    static min(a, b) {
-        return a < b ? a : b;
+    /**
+     * 最小值
+     */
+    static min() {
+        const args = Array.prototype.slice.call(arguments);
+        if (args.length === 1) return args[0];
+
+        return args.reduce(function(prev, cur) {
+            return prev <= cur ? prev : cur;
+        });
+        // return a < b ? a : b;
     }
 
-    static max(a, b) {
-        return a > b ? a : b;
+    /**
+     * 最大值
+     */
+    static max() {
+        const args = Array.prototype.slice.call(arguments);
+        if (args.length === 1) return args[0];
+
+        return args.reduce(function(prev, cur) {
+            return prev >= cur ? prev : cur;
+        });
+        //return a > b ? a : b;
     }
 
+    /**
+     * 绝对值
+     *
+     * @param {Number} a
+     * @param {Number} b
+     */
     static distance(a, b) {
         return Math.abs(a - b);
     }
 
+    /**
+     * 计算两点之间的距离
+     *
+     * @param {Object} p1
+     * @param {Object} p2
+     */
     static distanceLine(p1, p2) {
         let $x = p1.x - p2.x;
         let $y = p1.y - p2.y;
@@ -23,6 +53,12 @@ class Util {
         return Math.sqrt($x * $x + $y * $y);
     }
 
+    /**
+     * 获取圆的外接矩形
+     *
+     * @param {Object} center
+     * @param {Number} r
+     */
     static getBoundByCircle(center, r) {
         return {
             minX: center.left - r,
@@ -32,6 +68,12 @@ class Util {
         };
     }
 
+    /**
+     * 获取两个矩形之间的bound区域
+     *
+     * @param {Object} rect1
+     * @param {Object} rect2
+     */
     static getBoundByRect(rect1, rect2) {
         return {
             minX: Util.min(rect1.x, rect2.x),
@@ -41,25 +83,49 @@ class Util {
         };
     }
 
-    static isBoundIntersect(rec1, rec2) {
-        var minx = Util.min(rec1.minX, rec2.minX);
-        var miny = Util.min(rec1.minY, rec2.minY);
-        var maxx = Util.max(rec1.maxX, rec2.maxY);
-        var maxy = Util.max(rec1.maxY, rec2.maxY);
+    /**
+     * 两个矩形是否相较
+     *
+     * @param {Object} rect1
+     * @param {Object} rect2
+     */
+    static isBoundIntersect(rect1, rect2) {
+        var minx = Util.min(rect1.minX, rect2.minX);
+        var miny = Util.min(rect1.minY, rect2.minY);
+        var maxx = Util.max(rect1.maxX, rect2.maxY);
+        var maxy = Util.max(rect1.maxY, rect2.maxY);
         //如果兩個矩形相交，那麼計算得到的點對坐標必然滿足
         return !(minx > maxx || miny > maxy);
     }
 
+    /**
+     * 两个圆是否相较
+     *
+     * @param {Object} c1
+     * @param {Object} c2
+     */
     static isCircleIntersect(c1, c2) {
         let centerDistance = Math.sqrt(Math.pow(c1.x - c2.x, 2) + Math.pow(c1.y - c2.y, 2));
 
         return centerDistance <= c1.r * 2;
     }
 
+    /**
+     * 点是否在矩形中
+     *
+     * @param {Object} p
+     * @param {Object} rect
+     */
     static isInRect(p, rect) {
         return p.x > rect.x && p.x < rect.x + rect.w && p.y > rect.y && p.y < rect.y + rect.h;
     }
 
+    /**
+     * 点是否在圆中
+     *
+     * @param {Object} p
+     * @param {Object} rect
+     */
     static isInCircle(p, rect) {
         let dis = Util.distanceLine(p, { x: rect.x, y: rect.y });
 
@@ -70,7 +136,7 @@ class Util {
      * 设置dom元素属性
      *
      * @param {HTMLElement} target
-     * @param {Object} attributes
+     * @param {Object}      attributes
      */
     static setAttribute(target, attributes) {
         try {
@@ -86,7 +152,7 @@ class Util {
      * 设置dom元素样式
      *
      * @param {HTMLElement} target
-     * @param {Object} styles
+     * @param {Object}      styles
      */
     static setStyle(target, styles) {
         for (let key in styles) {
@@ -97,7 +163,7 @@ class Util {
     /**
      * 获取元素位置，大小信息
      *
-     * @param {*} element
+     * @param {HTMLElement} element
      */
     static getElementRectInfo(element) {
         const info = ["offsetLeft", "offsetTop", "offsetWidth", "offsetHeight"].map(function(
@@ -139,6 +205,11 @@ class Util {
         }
     }
 
+    /**
+     * 根据连接线类型获取SVG指令
+     *
+     * @param {String} type
+     */
     static getPathCMD(type) {
         if (type === "BEZIER") {
             return "C";
@@ -147,6 +218,9 @@ class Util {
         return "L";
     }
 
+    /**
+     * 生成唯一标识
+     */
     static guid() {
         return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, function(c) {
             var r = (Math.random() * 16) | 0,
@@ -155,6 +229,12 @@ class Util {
         });
     }
 
+    /**
+     * 在数组中找到指定id的目标
+     *
+     * @param {Array}  arr
+     * @param {String} id
+     */
     static findItemByUUID(arr, id) {
         for (let elem of arr) {
             if (elem.uuid === id) {
@@ -164,6 +244,12 @@ class Util {
         return null;
     }
 
+    /**
+     * 根据锚点找到对应的source
+     *
+     * @param {Array}  sous
+     * @param {Object} achor
+     */
     static findSourceByAchor(sous, achor) {
         for (let sou of sous) {
             for (let ach of sou.endPoints) {

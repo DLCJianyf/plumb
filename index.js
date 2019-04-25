@@ -6,7 +6,8 @@ window.plumb = new Plumb(sources, {
     marker: "ARROW",
     lineDashType: "SOLID",
     lineType: "FLOW",
-    strokeWidth: 2
+    strokeWidth: 2,
+    useGuideLine: true
 });
 
 plumb.getSources().forEach(function(source) {

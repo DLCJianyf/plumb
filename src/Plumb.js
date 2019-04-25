@@ -2,6 +2,7 @@ import Anchor from "./Anchor";
 import Source from "./Source";
 import EndPoint from "./EndPoint";
 import Connector from "./Connector";
+import GuideLine from "./GuideLine";
 
 import Drag from "./Drag";
 import Util from "./Util";
@@ -15,7 +16,7 @@ class Plumb extends Observable {
         super();
 
         this.flag = 1;
-        this.config = config;
+        this.config = Object.assign({}, config);
 
         this.sources = [];
         this.endPoints = [];
@@ -26,7 +27,14 @@ class Plumb extends Observable {
             SOURCE: [],
             ENDPOINT: []
         };
+
+        this.tolerant = 4;
+        this.guidLineH = null;
+        this.guidLineV = null;
+
         this.init(targets);
+        this.initEvents();
+        if (this.config.useGuideLine) this.initGuideLine();
     }
 
     /**
@@ -43,8 +51,6 @@ class Plumb extends Observable {
             this.draggable(source, "SOURCE");
             this.sources.push(source);
         }, this);
-
-        this.initEvents();
     }
 
     /**
@@ -54,18 +60,16 @@ class Plumb extends Observable {
         this.bind(document, "mousedown", Drag.dragStart);
         this.bind(document, "mousemove", Drag.dragging);
         this.bind(document, "mouseup", Drag.dragEnd);
+    }
 
-        //事件分发
-        const parent = DOMUtil.find("class", "jtk-demo-canvas");
-        // this.bind(parent, "mousedown", function(evt) {
-        //     Event.dispatchEvent(parent, evt, "mousedown");
-        // });
-        // this.bind(parent, "mouseover", function(evt) {
-        //     Event.dispatchEvent(parent, evt, "mouseover");
-        // });
-        // this.bind(parent, "mousedown", function(evt) {
-
-        // });
+    /**
+     * 初始化辅助线
+     */
+    initGuideLine() {
+        this.guidLineH = new GuideLine("horizontal");
+        this.guidLineV = new GuideLine("vertical");
+        DOMUtil.appendToNode(this.guidLineH.element);
+        DOMUtil.appendToNode(this.guidLineV.element);
     }
 
     /**
@@ -259,6 +263,40 @@ class Plumb extends Observable {
 
         const path = DOMUtil.find("tag", "path", parentWrapper);
         DOMUtil.setAttribute(path, "marker-end", `url(#${markerId})`);
+    }
+
+    /**
+     * 显示辅助线
+     *
+     * @param {Array} infos
+     */
+    showGuide(infos) {
+        const me = this;
+        const length = infos.length;
+
+        if (length === 2) {
+            me.guidLineH.show(infos[0].x + "px", infos[0].y + "px");
+            me.guidLineV.show(infos[1].x + "px", infos[1].y + "px");
+        } else if (length === 1) {
+            const inf = infos[0];
+            if (inf.type === "horizontal") {
+                me.guidLineH.show(inf.x + "px", inf.y + "px");
+                me.guidLineV.hide();
+            } else {
+                me.guidLineV.show(inf.x + "px", inf.y + "px");
+                me.guidLineH.hide();
+            }
+        } else if (length === 0) {
+            me.hideGuide();
+        }
+    }
+
+    /**
+     * 隐藏辅助线
+     */
+    hideGuide() {
+        this.guidLineH.hide();
+        this.guidLineV.hide();
     }
 
     /**

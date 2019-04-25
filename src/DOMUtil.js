@@ -28,22 +28,22 @@ const DOMUtil = {
      * @param {Object} atts
      */
     createElementNS: function(ns, tag, style, clazz, atts) {
-        let e = ns === null ? document.createElement(tag) : document.createElementNS(ns, tag);
+        let el = ns === null ? document.createElement(tag) : document.createElementNS(ns, tag);
 
         let i;
         style = style || {};
         for (i in style) {
-            e.style[i] = style[i];
+            el.style[i] = style[i];
         }
 
-        if (clazz) e.className = clazz;
+        if (clazz) el.className = clazz;
 
         atts = atts || {};
         for (i in atts) {
-            e.setAttribute(i, `${atts[i]}`);
+            el.setAttribute(i, `${atts[i]}`);
         }
 
-        return e;
+        return el;
     },
 
     /**
@@ -94,6 +94,19 @@ const DOMUtil = {
             return getComputedStyle(el, null).getPropertyValue(prop);
         } else {
             return el.currentStyle[prop];
+        }
+    },
+
+    /**
+     * 设置样式
+     *
+     * @param {HTMLElement} el
+     * @param {Object}      style
+     */
+    setStyle(el, style) {
+        style = style || {};
+        for (let i in style) {
+            el.style[i] = style[i];
         }
     },
 
