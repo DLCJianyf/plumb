@@ -1,3 +1,4 @@
+//组件
 import Anchor from "./Anchor";
 import Source from "./Source";
 import EndPoint from "./EndPoint";
@@ -5,6 +6,7 @@ import Connector from "./Connector";
 import GuideLine from "./GuideLine";
 import Grid from "./Grid";
 
+//能力
 import Drag from "./Drag";
 import Util from "./Util";
 import Render from "./Render";
@@ -12,12 +14,17 @@ import DOMUtil from "./DOMUtil";
 import EleResize from "./EleResize";
 import Observable from "./Observable";
 
+import Options from "./Options";
+
+/**
+ * 主入口，承上（组件）启下（能力）
+ */
 class Plumb extends Observable {
     constructor(targets, config) {
         super();
 
         this.flag = 1;
-        this.config = Object.assign({}, config);
+        this.config = Object.assign({}, Options.default, config);
 
         this.sources = [];
         this.endPoints = [];
@@ -34,6 +41,11 @@ class Plumb extends Observable {
         this.guidLineV = null;
 
         this.wrapper = DOMUtil.find("class", "jtk-demo-main");
+
+        if (!this.wrapper) {
+            console.log("");
+            return;
+        }
 
         this.init(targets);
         this.initEvents();
@@ -95,7 +107,7 @@ class Plumb extends Observable {
     /**
      * dom元素大小变化
      */
-    handleResize(mutations, observer) {
+    handleResize() {
         this.grid.trigger("resize");
     }
 
