@@ -1,6 +1,6 @@
 import Plumb from "./src/Plumb";
 
-let sources = document.getElementsByClassName("window");
+let sources = document.getElementsByClassName("jtk-demo-canvas-window");
 
 window.plumb = new Plumb(sources, {
     marker: "ARROW",

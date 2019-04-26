@@ -9,11 +9,13 @@ import Grid from "./Grid";
 //能力
 import Drag from "./Drag";
 import Util from "./Util";
+import Link from "./Link";
 import Render from "./Render";
 import DOMUtil from "./DOMUtil";
 import EleResize from "./EleResize";
 import Observable from "./Observable";
 
+//参数
 import Options from "./Options";
 
 /**
@@ -229,11 +231,18 @@ class Plumb extends Observable {
 
                         Render.updatePath(
                             path,
-                            connector.calcPathPointArr(width, height, bound, size)
+                            Link.calcPathPointArr(
+                                width,
+                                height,
+                                bound,
+                                size,
+                                connector.getSource(),
+                                connector.getTarget()
+                            )
                         );
 
                         //事件绑定
-                        this.bind(path, "click", connector.onclick.bind(connector));
+                        this.bind(path, "click", connector.onclick.bind(connector)());
                         this.bind(path, "mouseover", connector.onmouseover.bind(connector));
                         this.bind(path, "mouseout", connector.onmouseout.bind(connector));
 
@@ -296,7 +305,7 @@ class Plumb extends Observable {
      */
     addMarker(connectorUUID, rect, markerType, markerId) {
         let connector = plumb.connectors[connectorUUID];
-        let parentWrapper = connector.element;
+        let parentWrapper = DOMUtil.find("tag", "svg", connector.element);
         let marker = Render.assembleMarker(rect, markerType, markerId);
         DOMUtil.appendToNode(marker, parentWrapper);
 

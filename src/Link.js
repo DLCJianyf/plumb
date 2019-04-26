@@ -34,6 +34,214 @@ const Link = {
     },
 
     /**
+     * 计算SVG Path属性点
+     *
+     * @param {Number} width
+     * @param {Number} height
+     * @param {Number} bound
+     * @param {Number} size
+     */
+    calcPathPointArr(width, height, bound, size, source, target) {
+        switch (plumb.config.lineType) {
+            case "BEZIER":
+                return Link.calcBezier(width, height, bound, size, source, target);
+            case "STRAIGHT":
+                return Link.calcStraight(width, height, bound, size, source, target);
+            case "FLOW":
+                return Link.calcFlow(width, height, bound, size, source, target);
+            default:
+                return Link.calcBezier(width, height, bound, size, source, target);
+        }
+    },
+
+    /**
+     * 计算贝塞尔曲线参数
+     *
+     * @param {Number} width
+     * @param {Number} height
+     * @param {Number} bound
+     * @param {Number} size
+     */
+    calcBezier(width, height, bound, size, source, target) {
+        let p1 = [];
+        let p2 = [];
+        let p3 = [];
+        let p4 = [];
+
+        let maxX = bound.maxX - bound.minX;
+        let maxY = bound.maxY - bound.minY;
+        let minX = 0;
+        let minY = 0;
+
+        let thresoldX = 200;
+        let thresoldY = 0;
+        let sourceP = source;
+        let rect1 = sourceP.getRect();
+        let rect2 = target.getRect();
+
+        if (sourceP.anchor === "right" || sourceP.anchor === "bottom") {
+            if (rect1.x < rect2.x) {
+                p1.push(minX);
+                p2.push(minX + thresoldX);
+                p3.push(maxX - thresoldX);
+                p4.push(maxX);
+            } else {
+                p1.push(maxX);
+                p2.push(maxX + thresoldX);
+                p3.push(minX - thresoldX);
+                p4.push(minX);
+            }
+        } else {
+            if (rect1.x > rect2.x) {
+                p1.push(maxX);
+                p2.push(maxX - thresoldX);
+                p3.push(minX + thresoldX);
+                p4.push(minX);
+            } else {
+                p1.push(minX);
+                p2.push(minX - thresoldX);
+                p3.push(maxX + thresoldX);
+                p4.push(maxX);
+            }
+        }
+
+        if (rect1.y === bound.minY) {
+            p1.push(minY);
+            p2.push(minY + thresoldY);
+            p3.push(maxY - thresoldY);
+            p4.push(maxY);
+        } else {
+            p1.push(maxY);
+            p2.push(maxY - thresoldY);
+            p3.push(minY + thresoldY);
+            p4.push(minY);
+        }
+        //p3.push(maxY / 2);
+
+        return [p1, p2, p3, p4];
+    },
+
+    /**
+     * 计算直线参数
+     *
+     * @param {Number} width
+     * @param {Number} height
+     * @param {Number} bound
+     * @param {Number} size
+     */
+    calcStraight(width, height, bound, size, source, target) {
+        let p1 = [];
+        let p2 = [];
+
+        let maxX = bound.maxX - bound.minX;
+        let maxY = bound.maxY - bound.minY;
+        let minX = 0;
+        let minY = 0;
+
+        let rect = source.getRect();
+
+        if (rect.x === bound.minX) {
+            p1.push(minX);
+            p2.push(maxX);
+        } else {
+            p1.push(maxX);
+            p2.push(minX);
+        }
+
+        if (rect.y === bound.minY) {
+            p1.push(minY);
+            p2.push(maxY);
+        } else {
+            p1.push(maxY);
+            p2.push(minY);
+        }
+
+        return [p1, p2];
+    },
+
+    /**
+     * 计算流程线参数
+     *
+     * @param {Number} width
+     * @param {Number} height
+     * @param {Number} bound
+     * @param {Number} size
+     */
+    calcFlow(width, height, bound, size, source, target) {
+        let p1 = [];
+        let p2 = [];
+        let p3 = [];
+
+        let maxX = bound.maxX - bound.minX;
+        let maxY = bound.maxY - bound.minY;
+        let minX = 0;
+        let minY = 0;
+
+        let souE = source;
+        let tarE = target;
+        let rect1 = souE.getRect();
+        let rect2 = tarE.getRect();
+
+        if (rect1.x === bound.minX) {
+            p1.push(minX);
+            p2.push(minX);
+            p3.push(maxX);
+        } else {
+            p1.push(maxX);
+            p2.push(maxX);
+            p3.push(minX);
+        }
+
+        if (rect1.y === bound.minY) {
+            p1.push(minY);
+            p2.push(maxY);
+            p3.push(maxY);
+        } else {
+            p1.push(maxY);
+            p2.push(minY);
+            p3.push(minY);
+        }
+
+        let sou = Util.findSourceByAchor(plumb.sources, souE);
+        let tar = Util.findSourceByAchor(plumb.sources, tarE);
+        let r1 = sou.getRect();
+        let r2 = tar.getRect();
+
+        //参数转换以适配流程线的计算
+        let link = {
+            from: {
+                id: souE.type === "ANCHOR" ? null : souE.uuid,
+                x: p1[0],
+                y: p1[1],
+                w: r1.w,
+                h: r1.h,
+                type: souE.type,
+                anchor: souE.anchor
+            },
+
+            to: {
+                id: tarE.type === "ANCHOR" ? null : tarE.uuid,
+                x: p3[0],
+                y: p3[1],
+                w: r2.w,
+                h: r2.h,
+                type: tarE.type,
+                anchor: tarE.anchor
+            }
+        };
+
+        let linkerPoints = Link.getFlowPoints(link);
+        linkerPoints = linkerPoints.map(function(a) {
+            return [a.x, a.y];
+        });
+
+        let results = [p1];
+        results = results.concat(linkerPoints);
+        results.push(p3);
+        return results;
+    },
+
+    /**
      * 获取连接线中间过渡点
      *
      * @param {Object} link 连接线对象
@@ -62,7 +270,7 @@ const Link = {
 
         var width = Math.abs(to.x - from.x);
         var height = Math.abs(to.y - from.y);
-        var r = 40;
+        var r = 50;
         if (from.id != null && to.id != null) {
             var fromDir = this.getAngleDir(from.angle);
             var toDir = this.getAngleDir(to.angle);
@@ -329,8 +537,10 @@ const Link = {
                                             y: i.y
                                         });
                                     } else {
-                                        var u = h.y + h.h;
-                                        var p = v.y + v.h;
+                                        // var u = h.y + h.h;
+                                        // var p = v.y + v.h;
+                                        var u = h.y;
+                                        var p = v.y;
                                         var o = g.x + r;
                                         var n;
                                         if (p >= h.y && v.y <= u) {

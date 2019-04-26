@@ -169,10 +169,12 @@ const DOMUtil = {
     /**
      * 删除
      *
-     * @param {Object} elem
+     * @param {HTMLElement} elem
+     * @param {HTMLElement} parent
      */
-    delete(elem) {
-        elem.parentNode.removeChild(elem);
+    delete(elem, parent) {
+        parent = parent || elem.parentNode;
+        parent.removeChild(elem);
     },
 
     /**

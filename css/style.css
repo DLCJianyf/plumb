@@ -38,7 +38,7 @@ body {
 }
 
 /** ELEMENTS **/
-.chart-demo .window {
+.jtk-demo-canvas .jtk-demo-canvas-window {
     position: absolute;
     border: 0.1em dotted #d4e06b;
     width: 14em;
@@ -48,53 +48,82 @@ body {
 }
 
 /** HOVER EFFECTS **/
-.chart-demo .window:hover,
-.chart-demo .window.jtk-source-hover,
-.chart-demo .window.jtk-target-hover {
+.jtk-demo-canvas .jtk-demo-canvas-window:hover,
+.jtk-demo-canvas .jtk-demo-canvas-window.jtk-source-hover,
+.jtk-demo-canvas .jtk-demo-canvas-window.jtk-target-hover {
     border: 1px solid orange;
     color: orange;
 }
 
+.jtk-demo-canvas .text-linker {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    padding: 0;
+    border: none;
+    overflow: hidden;
+    background: #ffffff;
+    transform: translate(-50%, -50%);
+    line-height: 16px;
+    font-size: 13px;
+    font-weight: normal;
+    text-align: center;
+    color: rgb(50, 50, 50);
+    text-decoration: none;
+    z-index: 20;
+}
+
+.jtk-demo-canvas .text-linker-textarea {
+    height: 16px;
+    width: auto;
+    border: 1px solid gray;
+    white-space: nowrap;
+    /* overflow-x: hidden;
+    overflow-y: hidden; */
+    resize: none;
+    pointer-events: all;
+    z-index: 20;
+}
+
 /** ELEMENT POSITIONS **/
-#chartWindow1 {
+#jtk-demo-canvas-window1 {
     left: 400px;
     top: 60px;
 }
-#chartWindow2 {
+#jtk-demo-canvas-window2 {
     left: 100px;
     top: 150px;
 }
-#chartWindow3 {
+#jtk-demo-canvas-window3 {
     left: 800px;
     top: 150px;
 }
-#chartWindow4 {
+#jtk-demo-canvas-window4 {
     left: 400px;
     top: 400px;
 }
-#chartWindow5 {
+#jtk-demo-canvas-window5 {
     left: 220px;
     top: 280px;
 }
-#chartWindow6 {
+#jtk-demo-canvas-window6 {
     left: 700px;
     top: 280px;
 }
-#chartWindow7 {
+#jtk-demo-canvas-window7 {
     top: 180px;
     left: 460px;
 }
-#chartWindow8 {
+#jtk-demo-canvas-window8 {
     left: 630px;
     top: 380px;
 }
 
-.window {
+.jtk-demo-canvas-window {
     background-color: white;
     border: 1px solid #346789;
     text-align: center;
     z-index: 24;
-    cursor: pointer;
     box-shadow: 2px 2px 19px #aaa;
     -o-box-shadow: 2px 2px 19px #aaa;
     -webkit-box-shadow: 2px 2px 19px #aaa;
@@ -115,7 +144,7 @@ body {
     transition: box-shadow 0.15s ease-in;
 }
 
-.window:hover {
+.jtk-demo-canvas-window:hover {
     border: 1px solid #123456;
     box-shadow: 2px 2px 19px #444;
     -o-box-shadow: 2px 2px 19px #444;

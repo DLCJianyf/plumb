@@ -1,3 +1,4 @@
+import Link from "./Link";
 import Util from "./Util";
 import DOMUtil from "./DOMUtil";
 
@@ -214,7 +215,8 @@ class Render {
      */
     static deleteAnchor(anchor) {
         let parentWrapper = DOMUtil.find("class", "jtk-demo-canvas");
-        parentWrapper.removeChild(anchor.element);
+        DOMUtil.delete(anchor.element, parentWrapper);
+        // parentWrapper.removeChild(anchor.element);
     }
 
     /**
@@ -228,17 +230,48 @@ class Render {
      */
     static assembleConnector(width, height, bound, size, strokeWidth) {
         //if (!connector.element) {
+        const left = bound.minX + size / 2 + "px";
+        const top = bound.minY + size / 2 + "px";
 
-        let svg = Render.createSVG(width, height, {
-            left: `${bound.minX + size / 2}px`,
-            top: `${bound.minY + size / 2}px`,
+        const wrapper = DOMUtil.createElement("div", {
+            position: "absolute",
+            left: left,
+            top: top,
+            width: width + "px",
+            height: height + "px",
+            "pointer-events": "none",
+            overflow: "visible"
+        });
+        const svg = Render.createSVG("100%", "100%", {
+            left: 0,
+            top: 0,
             "pointer-events": "none",
             overflow: "visible",
             "z-index": 10
         });
-        let path = Render.createPath(strokeWidth);
-        svg.appendChild(path);
-        return svg;
+        // const svg = Render.createSVG(width, height, {
+        //     left: `${bound.minX + size / 2}px`,
+        //     top: `${bound.minY + size / 2}px`,
+        //     "pointer-events": "none",
+        //     overflow: "visible",
+        //     "z-index": 10
+        // });
+        const path = Render.createPath(strokeWidth);
+        const textWrapper = DOMUtil.createElement(
+            "div",
+            {
+                display: "none"
+            },
+            "text-linker"
+        );
+
+        //svg.appendChild(path);
+        DOMUtil.appendToNode(path, svg);
+        DOMUtil.appendToNode(svg, wrapper);
+        DOMUtil.appendToNode(textWrapper, wrapper);
+
+        return wrapper;
+        //return svg;
         //}
     }
 
@@ -258,7 +291,14 @@ class Render {
         //Render.updateSVG(connector.element, width, height, x, y);
         DOMUtil.sizeElement(connector.element, x, y, width, height);
 
-        let pointArr = connector.calcPathPointArr(width, height, bound, size);
+        let pointArr = Link.calcPathPointArr(
+            width,
+            height,
+            bound,
+            size,
+            connector.getSource(),
+            connector.getTarget()
+        );
         let path = DOMUtil.find("tag", "path", connector.element);
         Render.updatePath(path, pointArr);
     }
@@ -271,7 +311,8 @@ class Render {
     static deleteConnector(connector) {
         if (connector.element) {
             let parentWrapper = DOMUtil.find("class", "jtk-demo-canvas");
-            parentWrapper.removeChild(connector.element);
+            DOMUtil.delete(connector.element, parentWrapper);
+            //parentWrapper.removeChild(connector.element);
         }
     }
 
