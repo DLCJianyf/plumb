@@ -1,0 +1,206 @@
+html,
+body {
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    font-size: 12px;
+}
+
+#jtk-demo-main,
+.jtk-demo-canvas {
+    overflow: hidden;
+}
+
+#jtk-demo-main {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    z-index: 0;
+}
+
+#jtk-demo-main > .jtk-demo-canvas {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+}
+
+.demo {
+    /* for IE10+ touch devices */
+    touch-action: none;
+}
+
+/** ELEMENTS **/
+.jtk-demo-canvas .jtk-demo-canvas-window {
+    position: absolute;
+    border: 0.2em solid gray;
+    /* width: 14em;
+    height: 3em; */
+    line-height: 2em;
+    user-select: none;
+}
+
+/** HOVER EFFECTS **/
+.jtk-demo-canvas .jtk-demo-canvas-window:hover,
+.jtk-demo-canvas .jtk-demo-canvas-window.jtk-source-hover,
+.jtk-demo-canvas .jtk-demo-canvas-window.jtk-target-hover {
+    border: 1px solid orange;
+    color: orange;
+}
+
+.jtk-demo-canvas .text-linker {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    padding: 0;
+    border: none;
+    overflow: hidden;
+    background: #ffffff;
+    transform: translate(-50%, -50%);
+    line-height: 16px;
+    font-size: 13px;
+    font-weight: normal;
+    text-align: center;
+    color: rgb(50, 50, 50);
+    text-decoration: none;
+    z-index: 20;
+
+    -moz-user-select: -moz-none;
+    -moz-user-select: none;
+    -o-user-select: none;
+    -khtml-user-select: none;
+    -webkit-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
+.jtk-demo-canvas .text-linker-textarea {
+    height: 16px;
+    width: auto;
+    border: 1px solid gray;
+    white-space: nowrap;
+    /* overflow-x: hidden;
+    overflow-y: hidden; */
+    resize: none;
+    pointer-events: all;
+    z-index: 20;
+}
+
+/** ELEMENT POSITIONS **/
+#jtk-demo-canvas-window1 {
+    left: 400px;
+    top: 60px;
+    width: 60px;
+    height: 20px;
+    border-radius: 2px;
+    background: yellow;
+}
+#jtk-demo-canvas-window2 {
+    left: 100px;
+    top: 150px;
+    width: 60px;
+    height: 20px;
+    border-radius: 2px;
+    background: yellow;
+}
+#jtk-demo-canvas-window3 {
+    left: 800px;
+    top: 150px;
+    width: 20px;
+    height: 80px;
+    border-radius: 2px;
+    background: rgb(103, 204, 254);
+}
+#jtk-demo-canvas-window4 {
+    left: 400px;
+    top: 400px;
+    width: 20px;
+    height: 80px;
+    border-radius: 2px;
+    background: rgb(103, 204, 254);
+}
+#jtk-demo-canvas-window5 {
+    left: 220px;
+    top: 280px;
+    width: 20px;
+    height: 80px;
+    border-radius: 2px;
+    background: rgb(103, 204, 254);
+}
+#jtk-demo-canvas-window6 {
+    left: 700px;
+    top: 280px;
+    width: 20px;
+    height: 80px;
+    border-radius: 2px;
+    background: rgb(103, 204, 254);
+}
+#jtk-demo-canvas-window7 {
+    top: 180px;
+    left: 460px;
+    width: 20px;
+    height: 80px;
+    border-radius: 2px;
+    background: rgb(103, 204, 254);
+}
+#jtk-demo-canvas-window8 {
+    left: 630px;
+    top: 380px;
+    border: none;
+    padding: 1.5em;
+    background: rgb(254, 203, 229);
+    -webkit-clip-path: polygon(50% 0, 100% 50%, 50% 100%, 0 50%);
+}
+
+#jtk-demo-canvas-window12 {
+    left: 400px;
+    top: 60px;
+    background: rgb(203, 254, 230);
+}
+
+.jtk-demo-canvas-window {
+    background-color: white;
+    border: 1px solid #346789;
+    text-align: center;
+    z-index: 24;
+    /* box-shadow: 2px 2px 19px #aaa;
+    -o-box-shadow: 2px 2px 19px #aaa;
+    -webkit-box-shadow: 2px 2px 19px #aaa;
+    -moz-box-shadow: 2px 2px 19px #aaa;
+    -moz-border-radius: 0.5em;
+    border-radius: 0.5em; */
+    position: absolute;
+    color: black;
+    padding: 0.5em;
+    /* width: 80px;
+    height: 80px; */
+    /* min-height: 40px; */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    /* -webkit-transition: -webkit-box-shadow 0.15s ease-in;
+    -moz-transition: -moz-box-shadow 0.15s ease-in;
+    -o-transition: -o-box-shadow 0.15s ease-in;
+    transition: box-shadow 0.15s ease-in; */
+}
+
+.jtk-demo-canvas-window:hover {
+    border: 1px solid #123456;
+    box-shadow: 2px 2px 19px #444;
+    -o-box-shadow: 2px 2px 19px #444;
+    -webkit-box-shadow: 2px 2px 19px #444;
+    -moz-box-shadow: 2px 2px 19px #fff;
+    opacity: 0.9;
+}
+
+path,
+.jtk-endpoint {
+    cursor: pointer;
+}

@@ -290,7 +290,7 @@ class Render {
         let x = bound.minX + size / 2;
         let y = bound.minY + size / 2;
 
-        DOMUtil.sizeElement(connector.element, x, y, width, height);
+        DOMUtil.sizeElement(connector.element, x, y, width + 1, height + 1);
 
         let path = DOMUtil.find("tag", "path", connector.element);
         Render.updatePath(path, data, lineType, lineDashType);

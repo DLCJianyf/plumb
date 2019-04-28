@@ -2,9 +2,9 @@
 const path = require("path");
 
 module.exports = {
-    mode: "development",
+    mode: "production",
     //  入口文件
-    entry: "index.js",
+    entry: "./index.js",
 
     //  输出文件
     output: {

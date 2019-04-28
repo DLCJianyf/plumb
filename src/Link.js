@@ -81,7 +81,7 @@ const Link = {
         let rect1 = sourceP.getRect();
         let rect2 = target.getRect();
 
-        if (sourceP.anchor === "right" || sourceP.anchor === "bottom") {
+        if (sourceP.anchor !== "left") {
             if (rect1.x < rect2.x) {
                 p1.push(minX);
                 p2.push(minX + thresoldX);
