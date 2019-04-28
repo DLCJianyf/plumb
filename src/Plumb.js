@@ -172,7 +172,13 @@ class Plumb extends Observable {
                 break;
         }
 
-        let endPoint = new EndPoint(opts, pX, pY);
+        let endPoint = new EndPoint(
+            opts,
+            pX,
+            pY,
+            opts.lineType || plumb.config.lineType,
+            opts.lineDashType || plumb.config.lineDashType
+        );
         endPoint.element = Render.assembleEndPoint(endPoint);
         DOMUtil.appendToNode(endPoint.element, DOMUtil.find("class", "jtk-demo-canvas"));
 
@@ -212,7 +218,12 @@ class Plumb extends Observable {
                 if (endPoint.uuid === sourceID) {
                     let uuid = `${endPoint.uuid}^-^${targetEndPoint.uuid}`;
                     if (!plumb.connectors[uuid]) {
-                        let connector = new Connector(endPoint, targetEndPoint);
+                        let connector = new Connector(
+                            endPoint,
+                            targetEndPoint,
+                            endPoint.lineType,
+                            endPoint.lineDashType
+                        );
                         plumb.connectors[uuid] = connector;
 
                         let { width, height, bound, size } = connector.getSizeAndBound();

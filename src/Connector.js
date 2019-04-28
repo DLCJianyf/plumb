@@ -10,9 +10,11 @@ import Observable from "./Observable";
  * 连接线，SVG
  */
 class Connector extends Observable {
-    constructor(sourceEndPoint, targetEndPoint) {
+    constructor(sourceEndPoint, targetEndPoint, lineType, lineDashType) {
         super();
 
+        this.lineType = lineType;
+        this.lineDashType = lineDashType;
         this.sourceEndPoint = sourceEndPoint;
         this.targetEndPoint = targetEndPoint;
         this.uuid = `${sourceEndPoint.uuid}^-^${targetEndPoint.uuid}`;
@@ -84,9 +86,19 @@ class Connector extends Observable {
             bound,
             size,
             this.getSource(),
-            this.getTarget()
+            this.getTarget(),
+            this.lineType
         );
-        Render.updateConnector(this, width, height, bound, size, this.data);
+        Render.updateConnector(
+            this,
+            width,
+            height,
+            bound,
+            size,
+            this.data,
+            this.lineType,
+            this.lineDashType
+        );
 
         if (params && params.isCreate) {
             //事件绑定
@@ -96,7 +108,7 @@ class Connector extends Observable {
             this.bind(path, "mouseout", this.onmouseout.bind(this));
         }
 
-        if (plumb.config.lineType === "FLOW" && this.showText) {
+        if (this.lineType === "FLOW" && this.showText) {
             const textLinker = DOMUtil.find("class", "text-linker", this.element);
             this.updateText(textLinker, this.data);
         }
@@ -110,7 +122,7 @@ class Connector extends Observable {
      */
     updateText(el, data) {
         const rect = Util.getElementRectInfo(el);
-        const midPoint = Link.getLinkerMidpoint(data.slice());
+        const midPoint = Link.getLinkerMidpoint(data.slice(), this.lineType);
         DOMUtil.setStyle(el, {
             left: midPoint.x - rect.w / 2 + "px",
             top: midPoint.y - rect.h / 2 + "px",
@@ -190,13 +202,19 @@ class Connector extends Observable {
                         .trim();
                     textLinker.innerHTML = value;
                     me.showText = value === "" ? false : true;
-                    if (me.showText && plumb.config.lineType === "FLOW") {
-                        //延迟，等待DOM更新完毕
-                        setTimeout(function() {
-                            DOMUtil.setStyle(textLinker, {
-                                display: me.showText ? "block" : "none"
+                    if (me.lineType === "FLOW") {
+                        if (me.showText) {
+                            //延迟，等待DOM更新完毕
+                            setTimeout(function() {
+                                DOMUtil.setStyle(textLinker, {
+                                    display: me.showText ? "block" : "none"
+                                });
+                                me.updateText(textLinker, me.data);
                             });
-                            me.updateText(textLinker, me.data);
+                        }
+                    } else {
+                        DOMUtil.setStyle(textLinker, {
+                            display: me.showText ? "block" : "none"
                         });
                     }
 
@@ -213,7 +231,7 @@ class Connector extends Observable {
             //有文本内容时，autofocus自动聚焦失效
             textarea.element.focus();
 
-            if (plumb.config.lineType === "FLOW") {
+            if (this.lineType === "FLOW") {
                 this.updateText(textarea.element, this.data);
             }
         }

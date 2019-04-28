@@ -41,14 +41,16 @@ const Link = {
      * @param {Object} bound
      * @param {Number} size
      */
-    calcPathPointArr(width, height, bound, size, source, target) {
-        switch (plumb.config.lineType) {
+    calcPathPointArr(width, height, bound, size, source, target, lineType) {
+        switch (lineType) {
             case "BEZIER":
                 return Link.calcBezier(width, height, bound, size, source, target);
             case "STRAIGHT":
                 return Link.calcStraight(width, height, bound, size, source, target);
             case "FLOW":
                 return Link.calcFlow(width, height, bound, size, source, target);
+            case "CURVE":
+                return Link.calcCurve(bound, source, target);
             default:
                 return Link.calcBezier(width, height, bound, size, source, target);
         }
@@ -259,51 +261,46 @@ const Link = {
      * 获取连接线中间点
      *
      * @param {Array}  points
+     * @param {String} lineType
      */
-    getLinkerMidpoint: function(points) {
-        // if (plumb.config.lineType == "normal") {
-        //     g = {
-        //         x: 0.5 * linker.from.x + 0.5 * linker.to.x,
-        //         y: 0.5 * linker.from.y + 0.5 * linker.to.y
-        //     };
-        // } else {
-        //     if (plumb.config.lineType == "curve") {
-        //         let o = linker.from;
-        //         let m = linker.points[0];
-        //         let h = linker.points[1];
-        //         let f = linker.to;
-        //         g = {
-        //             x: o.x * 0.125 + m.x * 0.375 + h.x * 0.375 + f.x * 0.125,
-        //             y: o.y * 0.125 + m.y * 0.375 + h.y * 0.375 + f.y * 0.125
-        //         };
-        //     } else {
+    getLinkerMidpoint: function(points, lineType) {
         let g = {};
-        let i = points;
-        let l = 0;
-        for (let b = 1; b < i.length; b++) {
-            let m = i[b - 1];
-            let h = i[b];
-            let e = Util.distanceLine({ x: m[0], y: m[1] }, { x: h[0], y: h[1] });
-            l += e;
-        }
-        let k = l / 2;
-        let a = 0;
-        for (let b = 1; b < i.length; b++) {
-            let m = i[b - 1];
-            let h = i[b];
-            let e = Util.distanceLine({ x: m[0], y: m[1] }, { x: h[0], y: h[1] });
-            let j = a + e;
-            if (j >= k) {
-                let n = (k - a) / e;
-                g = {
-                    x: (1 - n) * m[0] + n * h[0],
-                    y: (1 - n) * m[1] + n * h[1]
-                };
-                break;
+        if (lineType == "CURVE") {
+            let o = points[0];
+            let m = linker.points[1];
+            let h = linker.points[2];
+            let f = points[3];
+            g = {
+                x: o.x * 0.125 + m.x * 0.375 + h.x * 0.375 + f.x * 0.125,
+                y: o.y * 0.125 + m.y * 0.375 + h.y * 0.375 + f.y * 0.125
+            };
+        } else if (lineType === "FLOW") {
+            let i = points;
+            let l = 0;
+            for (let b = 1; b < i.length; b++) {
+                let m = i[b - 1];
+                let h = i[b];
+                let e = Util.distanceLine({ x: m[0], y: m[1] }, { x: h[0], y: h[1] });
+                l += e;
             }
-            a = j;
+            let k = l / 2;
+            let a = 0;
+            for (let b = 1; b < i.length; b++) {
+                let m = i[b - 1];
+                let h = i[b];
+                let e = Util.distanceLine({ x: m[0], y: m[1] }, { x: h[0], y: h[1] });
+                let j = a + e;
+                if (j >= k) {
+                    let n = (k - a) / e;
+                    g = {
+                        x: (1 - n) * m[0] + n * h[0],
+                        y: (1 - n) * m[1] + n * h[1]
+                    };
+                    break;
+                }
+                a = j;
+            }
         }
-        //}
         //}
         return g;
     },
@@ -1500,40 +1497,48 @@ const Link = {
                 }
             }
         }
-        // } else {
-        //     if (link.linkerType == "curve") {
-        //         let from = link.from;
-        //         let to = link.to;
-        //         let f = this.measureDistance(from, to);
-        //         let k = f * 0.4;
-        //         function s(E, F) {
-        //             if (E.id != null) {
-        //                 return {
-        //                     x: E.x - k * Math.cos(E.angle),
-        //                     y: E.y - k * Math.sin(E.angle)
-        //                 };
-        //             } else {
-        //                 let G = Math.abs(E.y - F.y);
-        //                 let y = Math.abs(E.x - F.x);
-        //                 let H = Math.atan(G / y);
-        //                 let x = {};
-        //                 if (E.x <= F.x) {
-        //                     x.x = E.x + k * Math.cos(H);
-        //                 } else {
-        //                     x.x = E.x - k * Math.cos(H);
-        //                 }
-        //                 if (E.y <= F.y) {
-        //                     x.y = E.y + k * Math.sin(H);
-        //                 } else {
-        //                     x.y = E.y - k * Math.sin(H);
-        //                 }
-        //                 return x;
-        //             }
-        //         }
-        //         points.push(s(from, to));
-        //         points.push(s(to, from));
-        //     }
-        // }
+        return points;
+    },
+
+    /**
+     * 计算曲线参数
+     *
+     * @param {Object} bound
+     */
+    calcCurve(bound, source, target) {
+        let points = [];
+        let startingPoints = this.getStartingPoint(bound, source, target);
+        let from = { x: startingPoints.from[0], y: startingPoints.from[1] };
+        let to = { x: startingPoints.to[1], y: startingPoints.to[1] };
+        let f = this.measureDistance(from, to);
+        let k = f * 0.4;
+        function s(E, F) {
+            if (E.id != null) {
+                return {
+                    x: E.x - k * Math.cos(E.angle),
+                    y: E.y - k * Math.sin(E.angle)
+                };
+            } else {
+                let G = Math.abs(E.y - F.y);
+                let y = Math.abs(E.x - F.x);
+                let H = Math.atan(G / y);
+                let x = {};
+                if (E.x <= F.x) {
+                    x.x = E.x + k * Math.cos(H);
+                } else {
+                    x.x = E.x - k * Math.cos(H);
+                }
+                if (E.y <= F.y) {
+                    x.y = E.y + k * Math.sin(H);
+                } else {
+                    x.y = E.y - k * Math.sin(H);
+                }
+                return x;
+            }
+        }
+        points.push(s(from, to));
+        points.push(s(to, from));
+
         return points;
     }
 };

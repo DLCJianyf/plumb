@@ -104,8 +104,10 @@ class Render {
      *
      * @param {HTMLSVGElement} path
      * @param {Array}          pointArr
+     * @param {String}         lineType
+     * @param {String}         lineDashType
      */
-    static updatePath(path, pointArr) {
+    static updatePath(path, pointArr, lineType, lineDashType) {
         if (!pointArr.length) return;
 
         let p1 = pointArr[0];
@@ -115,14 +117,11 @@ class Render {
             let p = pointArr[i];
 
             d += " ";
-            if (i === 1) d += Util.getPathCMD(plumb.config.lineType);
+            if (i === 1) d += Util.getPathCMD(lineType);
             d += `${p[0]},${p[1]}`;
         }
 
-        let strokeDasharray = Util.getDashStyle(
-            plumb.config.lineDashType,
-            plumb.config.strokeWidth
-        ).toString();
+        let strokeDasharray = Util.getDashStyle(lineDashType, plumb.config.strokeWidth).toString();
 
         DOMUtil.setAttributes(path, {
             d: d,
@@ -284,15 +283,17 @@ class Render {
      * @param {Object} bound
      * @param {Number} size
      * @param {Array}  data
+     * @param {String} lineType
+     * @param {String} lineDashType
      */
-    static updateConnector(connector, width, height, bound, size, data) {
+    static updateConnector(connector, width, height, bound, size, data, lineType, lineDashType) {
         let x = bound.minX + size / 2;
         let y = bound.minY + size / 2;
 
         DOMUtil.sizeElement(connector.element, x, y, width, height);
 
         let path = DOMUtil.find("tag", "path", connector.element);
-        Render.updatePath(path, data);
+        Render.updatePath(path, data, lineType, lineDashType);
     }
 
     /**
