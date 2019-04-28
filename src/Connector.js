@@ -2,16 +2,25 @@ import Textarea from "./Textarea";
 
 import Util from "./Util";
 import DOMUtil from "./DOMUtil";
+import Link from "./Link";
+import Render from "./Render";
+import Observable from "./Observable";
 
 /**
  * 连接线，SVG
  */
-class Connector {
+class Connector extends Observable {
     constructor(sourceEndPoint, targetEndPoint) {
+        super();
+
         this.sourceEndPoint = sourceEndPoint;
         this.targetEndPoint = targetEndPoint;
         this.uuid = `${sourceEndPoint.uuid}^-^${targetEndPoint.uuid}`;
         this.markerId = `marker-achor-${plumb.flag++}`;
+
+        this.showText = false;
+
+        this.on("update", this.update.bind(this));
     }
 
     /**
@@ -63,6 +72,53 @@ class Connector {
     }
 
     /**
+     * 连接线更新
+     *
+     * @param {Object} params
+     */
+    update(params) {
+        const { width, height, bound, size } = params || this.getSizeAndBound();
+        this.data = Link.calcPathPointArr(
+            width,
+            height,
+            bound,
+            size,
+            this.getSource(),
+            this.getTarget()
+        );
+        Render.updateConnector(this, width, height, bound, size, this.data);
+
+        if (params && params.isCreate) {
+            //事件绑定
+            const path = DOMUtil.find("tag", "path", this.element);
+            this.bind(path, "click", this.onclick.bind(this)());
+            this.bind(path, "mouseover", this.onmouseover.bind(this));
+            this.bind(path, "mouseout", this.onmouseout.bind(this));
+        }
+
+        if (plumb.config.lineType === "FLOW" && this.showText) {
+            const textLinker = DOMUtil.find("class", "text-linker", this.element);
+            this.updateText(textLinker, this.data);
+        }
+    }
+
+    /**
+     * 更新连接线文本
+     *
+     * @param {HTMLElement} el
+     * @param {Array}       data
+     */
+    updateText(el, data) {
+        const rect = Util.getElementRectInfo(el);
+        const midPoint = Link.getLinkerMidpoint(data.slice());
+        DOMUtil.setStyle(el, {
+            left: midPoint.x - rect.w / 2 + "px",
+            top: midPoint.y - rect.h / 2 + "px",
+            transform: "translate(0, 0)"
+        });
+    }
+
+    /**
      * 点击
      *
      * @param {Object} evt
@@ -74,7 +130,7 @@ class Connector {
         let exeDbTap = false;
 
         return function() {
-            //之前的是双击
+            //上一次是双击
             if (exeDbTap) {
                 locked = false;
                 firstTab = false;
@@ -98,7 +154,7 @@ class Connector {
     }
 
     /**
-     * 单击
+     * 单击，删除连接线
      */
     onSingleClick() {
         if (window.confirm("是否删除连接线?")) {
@@ -115,19 +171,51 @@ class Connector {
     }
 
     /**
-     * 双击
+     * 双击，添加，编辑文本
      */
     onDoubleClick() {
         const me = this;
+        //const p = Promise.resolve();
+        const { width, height, bound, size } = this.getSizeAndBound();
+        const textLinker = DOMUtil.find("class", "text-linker", me.element);
         if (!me.textarea) {
-            me.textarea = new Textarea();
-            me.textarea.onblur = function() {
-                const textLinker = DOMUtil.find("class", "text-linker", me.element);
-                textLinker.innerHTML = me.textarea.element.innerHTML;
-                DOMUtil.delete(me.textarea, me.element);
-                delete me.textarea;
-            };
-            DOMUtil.appendToNode(me.textarea.element, me.element);
+            const textarea = new Textarea(textLinker.innerHTML);
+            textarea.on(
+                "text-blur",
+                function() {
+                    const value = textarea.element.value
+                        .replace(/</g, "&lt;")
+                        .replace(/>/g, "&gt;")
+                        .replace(/\n/g, "<br/>")
+                        .trim();
+                    textLinker.innerHTML = value;
+                    me.showText = value === "" ? false : true;
+                    if (me.showText && plumb.config.lineType === "FLOW") {
+                        //延迟，等待DOM更新完毕
+                        setTimeout(function() {
+                            DOMUtil.setStyle(textLinker, {
+                                display: me.showText ? "block" : "none"
+                            });
+                            me.updateText(textLinker, me.data);
+                        });
+                    }
+
+                    //移除DOM，解除事件绑定
+                    textarea.off("text-blur");
+                    textarea.unbind(textarea.element, "blur");
+                    DOMUtil.delete(textarea.element, me.element);
+                    // delete me.textarea;
+                },
+                textarea
+            );
+            DOMUtil.appendToNode(textarea.element, me.element);
+            DOMUtil.setStyle(textLinker, { display: "none" });
+            //有文本内容时，autofocus自动聚焦失效
+            textarea.element.focus();
+
+            if (plumb.config.lineType === "FLOW") {
+                this.updateText(textarea.element, this.data);
+            }
         }
     }
 

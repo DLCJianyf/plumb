@@ -223,28 +223,13 @@ class Plumb extends Observable {
                             size,
                             plumb.config.strokeWidth
                         );
-                        const path = DOMUtil.find("tag", "path", connector.element);
                         DOMUtil.appendToNode(
                             connector.element,
                             DOMUtil.find("class", "jtk-demo-canvas")
                         );
 
-                        Render.updatePath(
-                            path,
-                            Link.calcPathPointArr(
-                                width,
-                                height,
-                                bound,
-                                size,
-                                connector.getSource(),
-                                connector.getTarget()
-                            )
-                        );
-
-                        //事件绑定
-                        this.bind(path, "click", connector.onclick.bind(connector)());
-                        this.bind(path, "mouseover", connector.onmouseover.bind(connector));
-                        this.bind(path, "mouseout", connector.onmouseout.bind(connector));
+                        //更新连接线
+                        connector.trigger("update", { width, height, bound, size, isCreate: true });
 
                         return connector;
                     }
@@ -289,8 +274,7 @@ class Plumb extends Observable {
         for (let uuid in plumb.connectors) {
             let connector = plumb.connectors[uuid];
             if (UUID === connector.getSource().uuid || UUID === connector.getTarget().uuid) {
-                let { width, height, bound, size } = connector.getSizeAndBound();
-                Render.updateConnector(connector, width, height, bound, size);
+                connector.trigger("update");
             }
         }
     }

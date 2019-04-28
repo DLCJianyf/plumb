@@ -71,6 +71,14 @@ body {
     color: rgb(50, 50, 50);
     text-decoration: none;
     z-index: 20;
+
+    -moz-user-select: -moz-none;
+    -moz-user-select: none;
+    -o-user-select: none;
+    -khtml-user-select: none;
+    -webkit-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
 }
 
 .jtk-demo-canvas .text-linker-textarea {

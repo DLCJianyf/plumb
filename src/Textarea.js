@@ -5,24 +5,29 @@ import Observable from "./Observable";
  * 文本域，目前用于连接线
  */
 class Textarea extends Observable {
-    constructor() {
+    constructor(value) {
         super();
+        this.value = value;
         this.element = this.create();
     }
 
     /**
-     * 失去焦点事件，由外部重写
+     * 失去焦点事件
      */
-    onblur() {}
+    onblur() {
+        this.trigger("text-blur");
+    }
 
     /**
      * 创建dom元素
      */
     create() {
         const wrapper = DOMUtil.createElement("textarea", {}, "text-linker text-linker-textarea", {
-            wrap: "off"
+            wrap: "off",
+            autofocus: true
         });
-        this.bind(wrapper, "blur", this.onblur);
+        wrapper.value = this.value;
+        this.bind(wrapper, "blur", this.onblur.bind(this));
         return wrapper;
     }
 }

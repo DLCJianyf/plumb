@@ -17,7 +17,7 @@ const Link = {
      * @param {Number} angle 角度
      */
     getAngleDir: function(angle) {
-        var a = Math.PI;
+        let a = Math.PI;
         if (angle >= a / 4 && angle < (a / 4) * 3) {
             return 1;
         } else {
@@ -38,7 +38,7 @@ const Link = {
      *
      * @param {Number} width
      * @param {Number} height
-     * @param {Number} bound
+     * @param {Object} bound
      * @param {Number} size
      */
     calcPathPointArr(width, height, bound, size, source, target) {
@@ -59,7 +59,7 @@ const Link = {
      *
      * @param {Number} width
      * @param {Number} height
-     * @param {Number} bound
+     * @param {Object} bound
      * @param {Number} size
      */
     calcBezier(width, height, bound, size, source, target) {
@@ -126,7 +126,7 @@ const Link = {
      *
      * @param {Number} width
      * @param {Number} height
-     * @param {Number} bound
+     * @param {Object} bound
      * @param {Number} size
      */
     calcStraight(width, height, bound, size, source, target) {
@@ -164,12 +164,59 @@ const Link = {
      *
      * @param {Number} width
      * @param {Number} height
-     * @param {Number} bound
+     * @param {Object} bound
      * @param {Number} size
      */
     calcFlow(width, height, bound, size, source, target) {
+        const { from, to } = this.getStartingPoint(bound, source, target);
+
+        let sou = Util.findSourceByAchor(plumb.sources, source);
+        let tar = Util.findSourceByAchor(plumb.sources, target);
+        let r1 = sou.getRect();
+        let r2 = tar.getRect();
+
+        //参数转换以适配流程线的计算
+        let link = {
+            from: {
+                id: source.type === "ANCHOR" ? null : source.uuid,
+                x: from[0],
+                y: from[1],
+                w: r1.w,
+                h: r1.h,
+                type: source.type,
+                anchor: source.anchor
+            },
+
+            to: {
+                id: target.type === "ANCHOR" ? null : target.uuid,
+                x: to[0],
+                y: to[1],
+                w: r2.w,
+                h: r2.h,
+                type: target.type,
+                anchor: target.anchor
+            }
+        };
+
+        let linkerPoints = Link.getFlowPoints(link);
+        linkerPoints = linkerPoints.map(function(a) {
+            return [a.x, a.y];
+        });
+
+        let results = [from];
+        results = results.concat(linkerPoints);
+        results.push(to);
+        return results;
+    },
+
+    /**
+     * 获得起始点
+     *
+     * @param {Number} bound
+     */
+    getStartingPoint(bound, source, target) {
         let p1 = [];
-        let p2 = [];
+        //let p2 = [];
         let p3 = [];
 
         let maxX = bound.maxX - bound.minX;
@@ -184,61 +231,81 @@ const Link = {
 
         if (rect1.x === bound.minX) {
             p1.push(minX);
-            p2.push(minX);
+            // p2.push(minX);
             p3.push(maxX);
         } else {
             p1.push(maxX);
-            p2.push(maxX);
+            //p2.push(maxX);
             p3.push(minX);
         }
 
         if (rect1.y === bound.minY) {
             p1.push(minY);
-            p2.push(maxY);
+            //p2.push(maxY);
             p3.push(maxY);
         } else {
             p1.push(maxY);
-            p2.push(minY);
+            //p2.push(minY);
             p3.push(minY);
         }
 
-        let sou = Util.findSourceByAchor(plumb.sources, souE);
-        let tar = Util.findSourceByAchor(plumb.sources, tarE);
-        let r1 = sou.getRect();
-        let r2 = tar.getRect();
-
-        //参数转换以适配流程线的计算
-        let link = {
-            from: {
-                id: souE.type === "ANCHOR" ? null : souE.uuid,
-                x: p1[0],
-                y: p1[1],
-                w: r1.w,
-                h: r1.h,
-                type: souE.type,
-                anchor: souE.anchor
-            },
-
-            to: {
-                id: tarE.type === "ANCHOR" ? null : tarE.uuid,
-                x: p3[0],
-                y: p3[1],
-                w: r2.w,
-                h: r2.h,
-                type: tarE.type,
-                anchor: tarE.anchor
-            }
+        return {
+            from: p1,
+            to: p3
         };
+    },
 
-        let linkerPoints = Link.getFlowPoints(link);
-        linkerPoints = linkerPoints.map(function(a) {
-            return [a.x, a.y];
-        });
-
-        let results = [p1];
-        results = results.concat(linkerPoints);
-        results.push(p3);
-        return results;
+    /**
+     * 获取连接线中间点
+     *
+     * @param {Array}  points
+     */
+    getLinkerMidpoint: function(points) {
+        // if (plumb.config.lineType == "normal") {
+        //     g = {
+        //         x: 0.5 * linker.from.x + 0.5 * linker.to.x,
+        //         y: 0.5 * linker.from.y + 0.5 * linker.to.y
+        //     };
+        // } else {
+        //     if (plumb.config.lineType == "curve") {
+        //         let o = linker.from;
+        //         let m = linker.points[0];
+        //         let h = linker.points[1];
+        //         let f = linker.to;
+        //         g = {
+        //             x: o.x * 0.125 + m.x * 0.375 + h.x * 0.375 + f.x * 0.125,
+        //             y: o.y * 0.125 + m.y * 0.375 + h.y * 0.375 + f.y * 0.125
+        //         };
+        //     } else {
+        let g = {};
+        let i = points;
+        let l = 0;
+        for (let b = 1; b < i.length; b++) {
+            let m = i[b - 1];
+            let h = i[b];
+            let e = Util.distanceLine({ x: m[0], y: m[1] }, { x: h[0], y: h[1] });
+            l += e;
+        }
+        let k = l / 2;
+        let a = 0;
+        for (let b = 1; b < i.length; b++) {
+            let m = i[b - 1];
+            let h = i[b];
+            let e = Util.distanceLine({ x: m[0], y: m[1] }, { x: h[0], y: h[1] });
+            let j = a + e;
+            if (j >= k) {
+                let n = (k - a) / e;
+                g = {
+                    x: (1 - n) * m[0] + n * h[0],
+                    y: (1 - n) * m[1] + n * h[1]
+                };
+                break;
+            }
+            a = j;
+        }
+        //}
+        //}
+        return g;
     },
 
     /**
@@ -247,34 +314,34 @@ const Link = {
      * @param {Object} link 连接线对象
      */
     getFlowPoints: function(link) {
-        var points = [];
+        let points = [];
 
-        var PI = Math.PI;
-        // var souE = link.getSource();
-        // var tarE = link.getTarget();
-        // var ser = souE.getRect();
-        // var ter = tarE.getRect();
+        let PI = Math.PI;
+        // let souE = link.getSource();
+        // let tarE = link.getTarget();
+        // let ser = souE.getRect();
+        // let ter = tarE.getRect();
 
-        // var sou = Util.findSourceByAchor(plumb.sources, souE);
-        // var tar = Util.findSourceByAchor(plumb.sources, tarE);
+        // let sou = Util.findSourceByAchor(plumb.sources, souE);
+        // let tar = Util.findSourceByAchor(plumb.sources, tarE);
 
-        // var from = Object.assign({}, sou.getRect());
-        // var to = Object.assign({}, tar.getRect());
-        var from = link.from;
-        var to = link.to;
+        // let from = Object.assign({}, sou.getRect());
+        // let to = Object.assign({}, tar.getRect());
+        let from = link.from;
+        let to = link.to;
 
         from.angle = from.type === "ANCHOR" ? Link.angle["bottom"] : Link.angle[from.anchor];
         to.angle = to.type === "ANCHOR" ? Link.angle["bottom"] : Link.angle[to.anchor];
         // from.id = souE.type === "ANCHOR" ? null : sou.uuid;
         // to.id = tarE.type === "ANCHOR" ? null : tar.uuid;
 
-        var width = Math.abs(to.x - from.x);
-        var height = Math.abs(to.y - from.y);
-        var r = 50;
+        let width = Math.abs(to.x - from.x);
+        let height = Math.abs(to.y - from.y);
+        let r = 50;
         if (from.id != null && to.id != null) {
-            var fromDir = this.getAngleDir(from.angle);
-            var toDir = this.getAngleDir(to.angle);
-            var g, i, reverse;
+            let fromDir = this.getAngleDir(from.angle);
+            let toDir = this.getAngleDir(to.angle);
+            let g, i, reverse;
             if (fromDir == 1 && toDir == 1) {
                 if (from.y < to.y) {
                     g = from;
@@ -285,18 +352,18 @@ const Link = {
                     i = from;
                     reverse = true;
                 }
-                // var h = Model.getShapeById(g.id).props;
-                // var v = Model.getShapeById(i.id).props;
-                var h = g;
-                var v = i;
+                // let h = Model.getShapeById(g.id).props;
+                // let v = Model.getShapeById(i.id).props;
+                let h = g;
+                let v = i;
                 if (i.x >= h.x - r && i.x <= h.x + h.from + r) {
-                    var o;
+                    let o;
                     if (i.x < h.x + h.from / 2) {
                         o = h.x - r;
                     } else {
                         o = h.x + h.from + r;
                     }
-                    var n = g.y - r;
+                    let n = g.y - r;
                     points.push({
                         x: g.x,
                         y: n
@@ -307,7 +374,7 @@ const Link = {
                         y: n
                     });
                 } else {
-                    var n = g.y - r;
+                    let n = g.y - r;
                     points.push({
                         x: g.x,
                         y: n
@@ -328,13 +395,13 @@ const Link = {
                         i = from;
                         reverse = true;
                     }
-                    // var h = Model.getShapeById(g.id).props;
-                    // var v = Model.getShapeById(i.id).props;
-                    var h = g;
-                    var v = i;
+                    // let h = Model.getShapeById(g.id).props;
+                    // let v = Model.getShapeById(i.id).props;
+                    let h = g;
+                    let v = i;
                     if (i.x >= h.x - r && i.x <= h.x + h.from + r) {
-                        var n = g.y + r;
-                        var o;
+                        let n = g.y + r;
+                        let o;
                         if (i.x < h.x + h.from / 2) {
                             o = h.x - r;
                         } else {
@@ -350,7 +417,7 @@ const Link = {
                             y: n
                         });
                     } else {
-                        var n = g.y + r;
+                        let n = g.y + r;
                         points.push({
                             x: g.x,
                             y: n
@@ -371,13 +438,13 @@ const Link = {
                             i = from;
                             reverse = true;
                         }
-                        // var h = Model.getShapeById(g.id).props;
-                        // var v = Model.getShapeById(i.id).props;
-                        var h = g;
-                        var v = i;
+                        // let h = Model.getShapeById(g.id).props;
+                        // let v = Model.getShapeById(i.id).props;
+                        let h = g;
+                        let v = i;
                         if (i.y >= h.y - r && i.y <= h.y + h.h + r) {
-                            var o = g.x + r;
-                            var n;
+                            let o = g.x + r;
+                            let n;
                             if (i.y < h.y + h.h / 2) {
                                 n = h.y - r;
                             } else {
@@ -393,7 +460,7 @@ const Link = {
                                 y: i.y
                             });
                         } else {
-                            var o = g.x + r;
+                            let o = g.x + r;
                             points.push({
                                 x: o,
                                 y: g.y
@@ -414,13 +481,13 @@ const Link = {
                                 i = from;
                                 reverse = true;
                             }
-                            // var h = Model.getShapeById(g.id).props;
-                            // var v = Model.getShapeById(i.id).props;
-                            var h = g;
-                            var v = i;
+                            // let h = Model.getShapeById(g.id).props;
+                            // let v = Model.getShapeById(i.id).props;
+                            let h = g;
+                            let v = i;
                             if (i.y >= h.y - r && i.y <= h.y + h.h + r) {
-                                var o = g.x - r;
-                                var n;
+                                let o = g.x - r;
+                                let n;
                                 if (i.y < h.y + h.h / 2) {
                                     n = h.y - r;
                                 } else {
@@ -436,7 +503,7 @@ const Link = {
                                     y: i.y
                                 });
                             } else {
-                                var o = g.x - r;
+                                let o = g.x - r;
                                 points.push({
                                     x: o,
                                     y: g.y
@@ -457,12 +524,12 @@ const Link = {
                                     i = from;
                                     reverse = true;
                                 }
-                                // var h = Model.getShapeById(g.id).props;
-                                // var v = Model.getShapeById(i.id).props;
-                                var h = g;
-                                var v = i;
+                                // let h = Model.getShapeById(g.id).props;
+                                // let v = Model.getShapeById(i.id).props;
+                                let h = g;
+                                let v = i;
                                 if (i.y <= g.y) {
-                                    var n = g.y - height / 2;
+                                    let n = g.y - height / 2;
                                     points.push({
                                         x: g.x,
                                         y: n
@@ -472,12 +539,12 @@ const Link = {
                                         y: n
                                     });
                                 } else {
-                                    var a = h.x + h.from;
-                                    var j = v.x + v.from;
-                                    var n = g.y - r;
-                                    var o;
+                                    let a = h.x + h.from;
+                                    let j = v.x + v.from;
+                                    let n = g.y - r;
+                                    let o;
                                     if (j >= h.x && v.x <= a) {
-                                        var z = h.x + h.from / 2;
+                                        let z = h.x + h.from / 2;
                                         if (i.x < z) {
                                             o = h.x < v.x ? h.x - r : v.x - r;
                                         } else {
@@ -522,12 +589,12 @@ const Link = {
                                         i = from;
                                         reverse = true;
                                     }
-                                    // var h = Model.getShapeById(g.id).props;
-                                    // var v = Model.getShapeById(i.id).props;
-                                    var h = g;
-                                    var v = i;
+                                    // let h = Model.getShapeById(g.id).props;
+                                    // let v = Model.getShapeById(i.id).props;
+                                    let h = g;
+                                    let v = i;
                                     if (i.x > g.x) {
-                                        var o = g.x + width / 2;
+                                        let o = g.x + width / 2;
                                         points.push({
                                             x: o,
                                             y: g.y
@@ -537,14 +604,14 @@ const Link = {
                                             y: i.y
                                         });
                                     } else {
-                                        // var u = h.y + h.h;
-                                        // var p = v.y + v.h;
-                                        var u = h.y;
-                                        var p = v.y;
-                                        var o = g.x + r;
-                                        var n;
+                                        // let u = h.y + h.h;
+                                        // let p = v.y + v.h;
+                                        let u = h.y;
+                                        let p = v.y;
+                                        let o = g.x + r;
+                                        let n;
                                         if (p >= h.y && v.y <= u) {
-                                            var z = h.y + h.h / 2;
+                                            let z = h.y + h.h / 2;
                                             if (i.y < z) {
                                                 n = h.y < v.y ? h.y - r : v.y - r;
                                             } else {
@@ -592,10 +659,10 @@ const Link = {
                                             i = from;
                                             reverse = true;
                                         }
-                                        // var h = Model.getShapeById(g.id).props;
-                                        // var v = Model.getShapeById(i.id).props;
-                                        var h = g;
-                                        var v = i;
+                                        // let h = Model.getShapeById(g.id).props;
+                                        // let v = Model.getShapeById(i.id).props;
+                                        let h = g;
+                                        let v = i;
                                         if (i.x > g.x && i.y > g.y) {
                                             points.push({
                                                 x: i.x,
@@ -603,13 +670,13 @@ const Link = {
                                             });
                                         } else {
                                             if (i.x > g.x && v.x > g.x) {
-                                                var o;
+                                                let o;
                                                 if (v.x - g.x < r * 2) {
                                                     o = g.x + (v.x - g.x) / 2;
                                                 } else {
                                                     o = g.x + r;
                                                 }
-                                                var n = i.y - r;
+                                                let n = i.y - r;
                                                 points.push({
                                                     x: o,
                                                     y: g.y
@@ -624,9 +691,9 @@ const Link = {
                                                 });
                                             } else {
                                                 if (i.x <= g.x && i.y > h.y + h.h) {
-                                                    var u = h.y + h.h;
-                                                    var o = g.x + r;
-                                                    var n;
+                                                    let u = h.y + h.h;
+                                                    let o = g.x + r;
+                                                    let n;
                                                     if (i.y - u < r * 2) {
                                                         n = u + (i.y - u) / 2;
                                                     } else {
@@ -645,14 +712,14 @@ const Link = {
                                                         y: n
                                                     });
                                                 } else {
-                                                    var o;
-                                                    var j = v.x + v.from;
+                                                    let o;
+                                                    let j = v.x + v.from;
                                                     if (j > g.x) {
                                                         o = j + r;
                                                     } else {
                                                         o = g.x + r;
                                                     }
-                                                    var n;
+                                                    let n;
                                                     if (i.y < h.y) {
                                                         n = i.y - r;
                                                     } else {
@@ -687,11 +754,11 @@ const Link = {
                                                 i = from;
                                                 reverse = true;
                                             }
-                                            // var h = Model.getShapeById(g.id).props;
-                                            // var v = Model.getShapeById(i.id).props;
-                                            var h = g;
-                                            var v = i;
-                                            var j = v.x + v.from;
+                                            // let h = Model.getShapeById(g.id).props;
+                                            // let v = Model.getShapeById(i.id).props;
+                                            let h = g;
+                                            let v = i;
+                                            let j = v.x + v.from;
                                             if (i.x < g.x && i.y > g.y) {
                                                 points.push({
                                                     x: i.x,
@@ -699,13 +766,13 @@ const Link = {
                                                 });
                                             } else {
                                                 if (i.x < g.x && j < g.x) {
-                                                    var o;
+                                                    let o;
                                                     if (g.x - j < r * 2) {
                                                         o = j + (g.x - j) / 2;
                                                     } else {
                                                         o = g.x - r;
                                                     }
-                                                    var n = i.y - r;
+                                                    let n = i.y - r;
                                                     points.push({
                                                         x: o,
                                                         y: g.y
@@ -720,9 +787,9 @@ const Link = {
                                                     });
                                                 } else {
                                                     if (i.x >= g.x && i.y > h.y + h.h) {
-                                                        var u = h.y + h.h;
-                                                        var o = g.x - r;
-                                                        var n;
+                                                        let u = h.y + h.h;
+                                                        let o = g.x - r;
+                                                        let n;
                                                         if (i.y - u < r * 2) {
                                                             n = u + (i.y - u) / 2;
                                                         } else {
@@ -741,13 +808,13 @@ const Link = {
                                                             y: n
                                                         });
                                                     } else {
-                                                        var o;
+                                                        let o;
                                                         if (v.x < g.x) {
                                                             o = v.x - r;
                                                         } else {
                                                             o = g.x - r;
                                                         }
-                                                        var n;
+                                                        let n;
                                                         if (i.y < h.y) {
                                                             n = i.y - r;
                                                         } else {
@@ -782,10 +849,10 @@ const Link = {
                                                     i = from;
                                                     reverse = true;
                                                 }
-                                                // var h = Model.getShapeById(g.id).props;
-                                                // var v = Model.getShapeById(i.id).props;
-                                                var h = g;
-                                                var v = i;
+                                                // let h = Model.getShapeById(g.id).props;
+                                                // let v = Model.getShapeById(i.id).props;
+                                                let h = g;
+                                                let v = i;
                                                 if (i.x > g.x && i.y < g.y) {
                                                     points.push({
                                                         x: i.x,
@@ -793,13 +860,13 @@ const Link = {
                                                     });
                                                 } else {
                                                     if (i.x > g.x && v.x > g.x) {
-                                                        var o;
+                                                        let o;
                                                         if (v.x - g.x < r * 2) {
                                                             o = g.x + (v.x - g.x) / 2;
                                                         } else {
                                                             o = g.x + r;
                                                         }
-                                                        var n = i.y + r;
+                                                        let n = i.y + r;
                                                         points.push({
                                                             x: o,
                                                             y: g.y
@@ -814,8 +881,8 @@ const Link = {
                                                         });
                                                     } else {
                                                         if (i.x <= g.x && i.y < h.y) {
-                                                            var o = g.x + r;
-                                                            var n;
+                                                            let o = g.x + r;
+                                                            let n;
                                                             if (h.y - i.y < r * 2) {
                                                                 n = i.y + (h.y - i.y) / 2;
                                                             } else {
@@ -834,14 +901,14 @@ const Link = {
                                                                 y: n
                                                             });
                                                         } else {
-                                                            var o;
-                                                            var j = v.x + v.from;
+                                                            let o;
+                                                            let j = v.x + v.from;
                                                             if (j > g.x) {
                                                                 o = j + r;
                                                             } else {
                                                                 o = g.x + r;
                                                             }
-                                                            var n;
+                                                            let n;
                                                             if (i.y > h.y + h.h) {
                                                                 n = i.y + r;
                                                             } else {
@@ -876,11 +943,11 @@ const Link = {
                                                         i = from;
                                                         reverse = true;
                                                     }
-                                                    // var h = Model.getShapeById(g.id).props;
-                                                    // var v = Model.getShapeById(i.id).props;
-                                                    var h = g;
-                                                    var v = i;
-                                                    var j = v.x + v.from;
+                                                    // let h = Model.getShapeById(g.id).props;
+                                                    // let v = Model.getShapeById(i.id).props;
+                                                    let h = g;
+                                                    let v = i;
+                                                    let j = v.x + v.from;
                                                     if (i.x < g.x && i.y < g.y) {
                                                         points.push({
                                                             x: i.x,
@@ -888,13 +955,13 @@ const Link = {
                                                         });
                                                     } else {
                                                         if (i.x < g.x && j < g.x) {
-                                                            var o;
+                                                            let o;
                                                             if (g.x - j < r * 2) {
                                                                 o = j + (g.x - j) / 2;
                                                             } else {
                                                                 o = g.x - r;
                                                             }
-                                                            var n = i.y + r;
+                                                            let n = i.y + r;
                                                             points.push({
                                                                 x: o,
                                                                 y: g.y
@@ -909,8 +976,8 @@ const Link = {
                                                             });
                                                         } else {
                                                             if (i.x >= g.x && i.y < h.y) {
-                                                                var o = g.x - r;
-                                                                var n;
+                                                                let o = g.x - r;
+                                                                let n;
                                                                 if (h.y - i.y < r * 2) {
                                                                     n = i.y + (h.y - i.y) / 2;
                                                                 } else {
@@ -929,13 +996,13 @@ const Link = {
                                                                     y: n
                                                                 });
                                                             } else {
-                                                                var o;
+                                                                let o;
                                                                 if (v.x < g.x) {
                                                                     o = v.x - r;
                                                                 } else {
                                                                     o = g.x - r;
                                                                 }
-                                                                var n;
+                                                                let n;
                                                                 if (i.y > h.y + h.h) {
                                                                     n = i.y + r;
                                                                 } else {
@@ -971,7 +1038,7 @@ const Link = {
             }
         } else {
             if (from.id != null || to.id != null) {
-                var g, i, reverse, B;
+                let g, i, reverse, B;
                 if (from.id != null) {
                     g = from;
                     i = to;
@@ -983,8 +1050,8 @@ const Link = {
                     reverse = true;
                     B = to.angle;
                 }
-                // var e = Model.getShapeById(g.id).props;
-                var e = from;
+                // let e = Model.getShapeById(g.id).props;
+                let e = from;
                 if (B >= PI / 4 && B < (PI / 4) * 3) {
                     if (i.y < g.y) {
                         if (width >= height) {
@@ -993,7 +1060,7 @@ const Link = {
                                 y: i.y
                             });
                         } else {
-                            var z = height / 2;
+                            let z = height / 2;
                             points.push({
                                 x: g.x,
                                 y: g.y - z
@@ -1010,7 +1077,7 @@ const Link = {
                         });
                         if (width >= height) {
                             if (i.x >= e.x - r && i.x <= e.x + e.from + r) {
-                                var q = e.x + e.from / 2;
+                                let q = e.x + e.from / 2;
                                 if (i.x < q) {
                                     points.push({
                                         x: e.x - r,
@@ -1053,7 +1120,7 @@ const Link = {
                             }
                         } else {
                             if (i.x >= e.x - r && i.x <= e.x + e.from + r) {
-                                var q = e.x + e.from / 2;
+                                let q = e.x + e.from / 2;
                                 if (i.x < q) {
                                     points.push({
                                         x: e.x - r,
@@ -1093,7 +1160,7 @@ const Link = {
                     if (B >= (PI / 4) * 3 && B < (PI / 4) * 5) {
                         if (i.x > g.x) {
                             if (width >= height) {
-                                var z = width / 2;
+                                let z = width / 2;
                                 points.push({
                                     x: g.x + z,
                                     y: g.y
@@ -1115,7 +1182,7 @@ const Link = {
                             });
                             if (width >= height) {
                                 if (i.y >= e.y - r && i.y <= e.y + e.h + r) {
-                                    var q = e.y + e.h / 2;
+                                    let q = e.y + e.h / 2;
                                     if (i.y < q) {
                                         points.push({
                                             x: g.x + r,
@@ -1151,7 +1218,7 @@ const Link = {
                                 }
                             } else {
                                 if (i.y >= e.y - r && i.y <= e.y + e.h + r) {
-                                    var q = e.y + e.h / 2;
+                                    let q = e.y + e.h / 2;
                                     if (i.y < q) {
                                         points.push({
                                             x: g.x + r,
@@ -1203,7 +1270,7 @@ const Link = {
                                         y: i.y
                                     });
                                 } else {
-                                    var z = height / 2;
+                                    let z = height / 2;
                                     points.push({
                                         x: g.x,
                                         y: g.y + z
@@ -1220,7 +1287,7 @@ const Link = {
                                 });
                                 if (width >= height) {
                                     if (i.x >= e.x - r && i.x <= e.x + e.from + r) {
-                                        var q = e.x + e.from / 2;
+                                        let q = e.x + e.from / 2;
                                         if (i.x < q) {
                                             points.push({
                                                 x: e.x - r,
@@ -1263,7 +1330,7 @@ const Link = {
                                     }
                                 } else {
                                     if (i.x >= e.x - r && i.x <= e.x + e.from + r) {
-                                        var q = e.x + e.from / 2;
+                                        let q = e.x + e.from / 2;
                                         if (i.x < q) {
                                             points.push({
                                                 x: e.x - r,
@@ -1302,7 +1369,7 @@ const Link = {
                         } else {
                             if (i.x < g.x) {
                                 if (width >= height) {
-                                    var z = width / 2;
+                                    let z = width / 2;
                                     points.push({
                                         x: g.x - z,
                                         y: g.y
@@ -1324,7 +1391,7 @@ const Link = {
                                 });
                                 if (width >= height) {
                                     if (i.y >= e.y - r && i.y <= e.y + e.h + r) {
-                                        var q = e.y + e.h / 2;
+                                        let q = e.y + e.h / 2;
                                         if (i.y < q) {
                                             points.push({
                                                 x: g.x - r,
@@ -1360,7 +1427,7 @@ const Link = {
                                     }
                                 } else {
                                     if (i.y >= e.y - r && i.y <= e.y + e.h + r) {
-                                        var q = e.y + e.h / 2;
+                                        let q = e.y + e.h / 2;
                                         if (i.y < q) {
                                             points.push({
                                                 x: g.x - r,
@@ -1411,7 +1478,7 @@ const Link = {
                 }
             } else {
                 if (width >= height) {
-                    var z = (to.x - from.x) / 2;
+                    let z = (to.x - from.x) / 2;
                     points.push({
                         x: from.x + z,
                         y: from.y
@@ -1421,7 +1488,7 @@ const Link = {
                         y: to.y
                     });
                 } else {
-                    var z = (to.y - from.y) / 2;
+                    let z = (to.y - from.y) / 2;
                     points.push({
                         x: from.x,
                         y: from.y + z
@@ -1435,10 +1502,10 @@ const Link = {
         }
         // } else {
         //     if (link.linkerType == "curve") {
-        //         var from = link.from;
-        //         var to = link.to;
-        //         var f = this.measureDistance(from, to);
-        //         var k = f * 0.4;
+        //         let from = link.from;
+        //         let to = link.to;
+        //         let f = this.measureDistance(from, to);
+        //         let k = f * 0.4;
         //         function s(E, F) {
         //             if (E.id != null) {
         //                 return {
@@ -1446,10 +1513,10 @@ const Link = {
         //                     y: E.y - k * Math.sin(E.angle)
         //                 };
         //             } else {
-        //                 var G = Math.abs(E.y - F.y);
-        //                 var y = Math.abs(E.x - F.x);
-        //                 var H = Math.atan(G / y);
-        //                 var x = {};
+        //                 let G = Math.abs(E.y - F.y);
+        //                 let y = Math.abs(E.x - F.x);
+        //                 let H = Math.atan(G / y);
+        //                 let x = {};
         //                 if (E.x <= F.x) {
         //                     x.x = E.x + k * Math.cos(H);
         //                 } else {

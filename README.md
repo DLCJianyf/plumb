@@ -16,12 +16,8 @@ README
 
 ![image](https://github.com/DLCJianyf/plumb/blob/master/img/3333.png)
 
-# 辅助线
+# 辅助线, 背景网格, 连接线文本
 
 ![image](https://github.com/DLCJianyf/plumb/blob/master/img/5555.png)
-
-# 背景网格
-
-![image](https://github.com/DLCJianyf/plumb/blob/master/img/6666.png)
 
 ![image](https://github.com/DLCJianyf/plumb/blob/master/img/11111.gif)

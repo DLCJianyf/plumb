@@ -283,24 +283,16 @@ class Render {
      * @param {Number} height
      * @param {Object} bound
      * @param {Number} size
+     * @param {Array}  data
      */
-    static updateConnector(connector, width, height, bound, size) {
+    static updateConnector(connector, width, height, bound, size, data) {
         let x = bound.minX + size / 2;
         let y = bound.minY + size / 2;
 
-        //Render.updateSVG(connector.element, width, height, x, y);
         DOMUtil.sizeElement(connector.element, x, y, width, height);
 
-        let pointArr = Link.calcPathPointArr(
-            width,
-            height,
-            bound,
-            size,
-            connector.getSource(),
-            connector.getTarget()
-        );
         let path = DOMUtil.find("tag", "path", connector.element);
-        Render.updatePath(path, pointArr);
+        Render.updatePath(path, data);
     }
 
     /**
