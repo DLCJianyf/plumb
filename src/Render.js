@@ -73,14 +73,15 @@ class Render {
      * @param {Number} x
      * @param {Number} y
      * @param {Number} r
+     * @param {Object} style
      */
-    static createArrow(x, y, r) {
+    static createArrow(x, y, r, style) {
         const w = 2 * r;
         const h = 2 * r;
 
         return DOMUtil.createElementNS(DOMUtil.ns, "path", {}, null, {
             d: `M0,0 L${w},${r} L0,${h} L${r},${r} L0,0`,
-            fill: "gray",
+            fill: style.fill,
             stroke: "white"
         });
     }
@@ -106,8 +107,9 @@ class Render {
      * @param {Array}          pointArr
      * @param {String}         lineType
      * @param {String}         lineDashType
+     * @param {String}         lineColor
      */
-    static updatePath(path, pointArr, lineType, lineDashType) {
+    static updatePath(path, pointArr, lineType, lineDashType, lineColor) {
         if (!pointArr.length) return;
 
         let p1 = pointArr[0];
@@ -125,6 +127,7 @@ class Render {
 
         DOMUtil.setAttributes(path, {
             d: d,
+            stroke: lineColor,
             "stroke-dasharray": strokeDasharray
         });
     }
@@ -285,15 +288,26 @@ class Render {
      * @param {Array}  data
      * @param {String} lineType
      * @param {String} lineDashType
+     * @param {String} lineColor
      */
-    static updateConnector(connector, width, height, bound, size, data, lineType, lineDashType) {
+    static updateConnector(
+        connector,
+        width,
+        height,
+        bound,
+        size,
+        data,
+        lineType,
+        lineDashType,
+        lineColor
+    ) {
         let x = bound.minX + size / 2;
         let y = bound.minY + size / 2;
 
         DOMUtil.sizeElement(connector.element, x, y, width + 1, height + 1);
 
         let path = DOMUtil.find("tag", "path", connector.element);
-        Render.updatePath(path, data, lineType, lineDashType);
+        Render.updatePath(path, data, lineType, lineDashType, lineColor);
     }
 
     /**
@@ -315,8 +329,9 @@ class Render {
      * @param {Array}  rect
      * @param {String} markerType
      * @param {String} markerId
+     * @param {String} color
      */
-    static assembleMarker(rect, markerType, markerId) {
+    static assembleMarker(rect, markerType, markerId, color) {
         const size = rect.w;
         const r = size / 2;
         const x = r;
@@ -339,13 +354,13 @@ class Render {
         let shape;
         switch (markerType) {
             case "ARROW":
-                shape = Render.createArrow(x, y, r);
+                shape = Render.createArrow(x, y, r, { fill: color });
                 break;
             case "star":
                 break;
 
             default:
-                shape = Render.createArrow(x, y, r);
+                shape = Render.createArrow(x, y, r, { fill: color });
                 break;
         }
 

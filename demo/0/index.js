@@ -7,7 +7,9 @@ window.plumb = new Plumb(sources, {
     strokeWidth: 2,
     padding: 20,
     useGuideLine: true,
-    useGrid: true
+    useGrid: true,
+    lineColor: "blue",
+    textColor: "red"
 });
 
 plumb.getSources().forEach(function(source) {

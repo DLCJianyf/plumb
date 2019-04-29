@@ -8,7 +8,7 @@ import Observable from "./Observable";
  * 锚点
  */
 class EndPoint extends Observable {
-    constructor(opt, x, y, lineType, lineDashType) {
+    constructor(opt, x, y, lineType, lineDashType, lineColor, textColor) {
         super();
 
         this.type = "END_POINT";
@@ -20,6 +20,8 @@ class EndPoint extends Observable {
         //this.rect = [x, y, opt.size, opt.size];
         this.lineType = lineType;
         this.lineDashType = lineDashType;
+        this.lineColor = lineColor;
+        this.textColor = textColor;
         this.isMouseDown = false;
 
         this.on("moved", this.moved, this);

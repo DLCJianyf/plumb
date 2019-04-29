@@ -2,7 +2,7 @@
 const path = require("path");
 
 module.exports = {
-    mode: "production",
+    mode: "development",
     //  入口文件
     entry: "./index.js",
 

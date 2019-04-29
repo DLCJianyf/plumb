@@ -176,8 +176,10 @@ class Plumb extends Observable {
             opts,
             pX,
             pY,
-            opts.lineType || plumb.config.lineType,
-            opts.lineDashType || plumb.config.lineDashType
+            opts.lineType || this.config.lineType,
+            opts.lineDashType || this.config.lineDashType,
+            opts.lineColor || this.config.lineColor,
+            opts.textColor || this.config.textColor
         );
         endPoint.element = Render.assembleEndPoint(endPoint);
         DOMUtil.appendToNode(endPoint.element, DOMUtil.find("class", "jtk-demo-canvas"));
@@ -218,12 +220,7 @@ class Plumb extends Observable {
                 if (endPoint.uuid === sourceID) {
                     let uuid = `${endPoint.uuid}^-^${targetEndPoint.uuid}`;
                     if (!plumb.connectors[uuid]) {
-                        let connector = new Connector(
-                            endPoint,
-                            targetEndPoint,
-                            endPoint.lineType,
-                            endPoint.lineDashType
-                        );
+                        let connector = new Connector(endPoint, targetEndPoint);
                         plumb.connectors[uuid] = connector;
 
                         let { width, height, bound, size } = connector.getSizeAndBound();
@@ -301,7 +298,7 @@ class Plumb extends Observable {
     addMarker(connectorUUID, rect, markerType, markerId) {
         let connector = plumb.connectors[connectorUUID];
         let parentWrapper = DOMUtil.find("tag", "svg", connector.element);
-        let marker = Render.assembleMarker(rect, markerType, markerId);
+        let marker = Render.assembleMarker(rect, markerType, markerId, connector.lineColor);
         DOMUtil.appendToNode(marker, parentWrapper);
 
         const path = DOMUtil.find("tag", "path", parentWrapper);

@@ -10,13 +10,17 @@ import Observable from "./Observable";
  * 连接线，SVG
  */
 class Connector extends Observable {
-    constructor(sourceEndPoint, targetEndPoint, lineType, lineDashType) {
+    constructor(sourceEndPoint, targetEndPoint) {
         super();
 
-        this.lineType = lineType;
-        this.lineDashType = lineDashType;
         this.sourceEndPoint = sourceEndPoint;
         this.targetEndPoint = targetEndPoint;
+
+        this.lineType = sourceEndPoint.lineType;
+        this.lineDashType = sourceEndPoint.lineDashType;
+        this.lineColor = sourceEndPoint.lineColor;
+        this.textColor = sourceEndPoint.textColor;
+
         this.uuid = `${sourceEndPoint.uuid}^-^${targetEndPoint.uuid}`;
         this.markerId = `marker-achor-${plumb.flag++}`;
 
@@ -97,7 +101,8 @@ class Connector extends Observable {
             size,
             this.data,
             this.lineType,
-            this.lineDashType
+            this.lineDashType,
+            this.lineColor
         );
 
         if (params && params.isCreate) {
@@ -217,6 +222,7 @@ class Connector extends Observable {
                             display: me.showText ? "block" : "none"
                         });
                     }
+                    DOMUtil.setStyle(textLinker, { color: me.textColor });
 
                     //移除DOM，解除事件绑定
                     textarea.off("text-blur");
@@ -265,10 +271,10 @@ class Connector extends Observable {
     onmouseout(evt) {
         const paths = DOMUtil.find("tag", "path", this.element, true);
         DOMUtil.setAttributes(paths[0], {
-            stroke: "gray",
+            stroke: this.lineColor,
             "stroke-width": plumb.config.strokeWidth
         });
-        DOMUtil.setAttributes(paths[1], { fill: "gray" });
+        DOMUtil.setAttributes(paths[1], { fill: this.lineColor });
 
         this.uuid.split("^-^").forEach(function(id) {
             const p = Util.findItemByUUID(plumb.endPoints, id);
