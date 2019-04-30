@@ -2,9 +2,9 @@
 const path = require("path");
 
 module.exports = {
-    mode: "development",
+    mode: "production",
     //  入口文件
-    entry: "./index.js",
+    entry: "./src/index.js",
 
     //  输出文件
     output: {
@@ -12,7 +12,9 @@ module.exports = {
         filename: "bulid.js",
 
         // 输出的文件地址  path对应一个绝对路径，此路径是你希望一次性打包的目录。
-        path: path.resolve(__dirname, "dist")
+        path: path.resolve(__dirname, "dist"),
+
+        libraryTarget: "umd"
     },
 
     //模块

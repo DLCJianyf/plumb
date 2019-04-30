@@ -1,6 +1,6 @@
 {
     "name": "plumb",
-    "version": "1.0.0",
+    "version": "2.0.0",
     "description": "",
     "babel": {
         "presets": [
@@ -9,7 +9,7 @@
     },
     "scripts": {
         "test": "echo \"Error: no test specified\" && exit 1",
-        "dev": "webpack --config webpack.config.js --colors"
+        "dist": "webpack --config webpack.config.js --colors"
     },
     "devDependencies": {
         "babel-core": "^6.26.3",
