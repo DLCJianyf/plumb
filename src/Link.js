@@ -267,12 +267,12 @@ const Link = {
         let g = {};
         if (lineType == "CURVE") {
             let o = points[0];
-            let m = linker.points[1];
-            let h = linker.points[2];
+            let m = points[1];
+            let h = points[2];
             let f = points[3];
             g = {
-                x: o.x * 0.125 + m.x * 0.375 + h.x * 0.375 + f.x * 0.125,
-                y: o.y * 0.125 + m.y * 0.375 + h.y * 0.375 + f.y * 0.125
+                x: o[0] * 0.125 + m[0] * 0.375 + h[0] * 0.375 + f[0] * 0.125,
+                y: o[1] * 0.125 + m[1] * 0.375 + h[1] * 0.375 + f[1] * 0.125
             };
         } else if (lineType === "FLOW") {
             let i = points;
@@ -1508,12 +1508,23 @@ const Link = {
     calcCurve(bound, source, target) {
         let points = [];
         let startingPoints = this.getStartingPoint(bound, source, target);
-        let from = { x: startingPoints.from[0], y: startingPoints.from[1] };
-        let to = { x: startingPoints.to[1], y: startingPoints.to[1] };
-        let f = this.measureDistance(from, to);
+        let from = {
+            x: startingPoints.from[0],
+            y: startingPoints.from[1],
+            type: source.type,
+            angle: source.type === "ANCHOR" ? Link.angle["bottom"] : Link.angle[source.anchor]
+        };
+        let to = {
+            x: startingPoints.to[0],
+            y: startingPoints.to[1],
+            type: target.type,
+            angle: target.type === "ANCHOR" ? Link.angle["bottom"] : Link.angle[target.anchor]
+        };
+
+        let f = Util.distanceLine(from, to);
         let k = f * 0.4;
         function s(E, F) {
-            if (E.id != null) {
+            if (E.type === "END_POINT") {
                 return {
                     x: E.x - k * Math.cos(E.angle),
                     y: E.y - k * Math.sin(E.angle)
@@ -1539,7 +1550,15 @@ const Link = {
         points.push(s(from, to));
         points.push(s(to, from));
 
-        return points;
+        let linkerPoints = points.map(function(a) {
+            return [a.x, a.y];
+        });
+
+        let results = [[from.x, from.y]];
+        results = results.concat(linkerPoints);
+        results.push([to.x, to.y]);
+
+        return results;
     }
 };
 

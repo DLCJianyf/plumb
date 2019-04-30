@@ -14,7 +14,6 @@ class Util {
         return args.reduce(function(prev, cur) {
             return prev <= cur ? prev : cur;
         });
-        // return a < b ? a : b;
     }
 
     /**
@@ -27,7 +26,6 @@ class Util {
         return args.reduce(function(prev, cur) {
             return prev >= cur ? prev : cur;
         });
-        //return a > b ? a : b;
     }
 
     /**
@@ -211,7 +209,7 @@ class Util {
      * @param {String} type
      */
     static getPathCMD(type) {
-        if (type === "BEZIER") {
+        if (type === "BEZIER" || type === "CURVE") {
             return "C";
         }
 
@@ -259,6 +257,15 @@ class Util {
             }
         }
         return null;
+    }
+
+    /**
+     * 是否应该更新文本
+     *
+     * @param {String} lineType
+     */
+    static shouldUpdateText(lineType) {
+        return lineType === "FLOW" || lineType === "CURVE";
     }
 }
 

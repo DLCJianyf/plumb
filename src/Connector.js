@@ -113,7 +113,7 @@ class Connector extends Observable {
             this.bind(path, "mouseout", this.onmouseout.bind(this));
         }
 
-        if (this.lineType === "FLOW" && this.showText) {
+        if (Util.shouldUpdateText(this.lineType) && this.showText) {
             const textLinker = DOMUtil.find("class", "text-linker", this.element);
             this.updateText(textLinker, this.data);
         }
@@ -207,7 +207,7 @@ class Connector extends Observable {
                         .trim();
                     textLinker.innerHTML = value;
                     me.showText = value === "" ? false : true;
-                    if (me.lineType === "FLOW") {
+                    if (Util.shouldUpdateText(me.lineType)) {
                         if (me.showText) {
                             //延迟，等待DOM更新完毕
                             setTimeout(function() {
@@ -237,7 +237,7 @@ class Connector extends Observable {
             //有文本内容时，autofocus自动聚焦失效
             textarea.element.focus();
 
-            if (this.lineType === "FLOW") {
+            if (Util.shouldUpdateText(me.lineType)) {
                 this.updateText(textarea.element, this.data);
             }
         }
