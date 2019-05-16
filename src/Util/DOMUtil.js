@@ -1,5 +1,6 @@
 /**
  * DOM相关操作
+ *
  */
 const DOMUtil = {
     ns: "http://www.w3.org/2000/svg",
@@ -28,7 +29,8 @@ const DOMUtil = {
      * @param {Object} atts
      */
     createElementNS: function(ns, tag, style, clazz, atts) {
-        let el = ns === null ? document.createElement(tag) : document.createElementNS(ns, tag);
+        let el =
+            ns === null ? document.createElement(tag) : document.createElementNS(ns, tag);
 
         let i;
         style = style || {};
@@ -189,7 +191,9 @@ const DOMUtil = {
         parent = parent || document;
 
         if (tag === "tag") {
-            return all ? parent.getElementsByTagName(name) : parent.getElementsByTagName(name)[0];
+            return all
+                ? parent.getElementsByTagName(name)
+                : parent.getElementsByTagName(name)[0];
         } else if (tag === "class") {
             return parent.getElementsByClassName(name)[0];
         } else {
