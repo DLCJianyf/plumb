@@ -1,8 +1,8 @@
-import Util from "./Util";
-import Drag from "./Drag";
-import Render from "./Render";
-import DOMUtil from "./DOMUtil";
-import Observable from "./Observable";
+import Util from "../Util/Util";
+import EventHandler from "../event/EventHandler";
+import Render from "../Render";
+import DOMUtil from "../Util/DOMUtil";
+import Observable from "../event/Observable";
 
 /**
  * 锚点
@@ -60,7 +60,9 @@ class EndPoint extends Observable {
                 this.originX,
                 this.originY
             );
-            plumb.floatingEndPoint.element = Render.assembleAnchor(plumb.floatingEndPoint);
+            plumb.floatingEndPoint.element = Render.assembleAnchor(
+                plumb.floatingEndPoint
+            );
             DOMUtil.appendToNode(
                 plumb.floatingEndPoint.element,
                 document.querySelector(".jtk-demo-canvas")
@@ -68,7 +70,7 @@ class EndPoint extends Observable {
             plumb.draggable(plumb.floatingEndPoint, "ENDPOINT");
 
             //更改拖拽目标
-            Drag.setDragEl(plumb.floatingEndPoint);
+            EventHandler.setDragEl(plumb.floatingEndPoint);
         }
     }
 

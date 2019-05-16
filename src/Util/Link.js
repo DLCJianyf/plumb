@@ -1,7 +1,7 @@
 import Util from "./Util";
 
 /**
- * 连接线点数据计算，主要为流程线
+ * 连接线点数据计算，直线，曲线，贝塞尔，流程线
  */
 const Link = {
     angle: {

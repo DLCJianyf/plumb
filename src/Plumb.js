@@ -1,22 +1,22 @@
 //组件
-import Anchor from "./Anchor";
-import Source from "./Source";
-import EndPoint from "./EndPoint";
-import Connector from "./Connector";
-import GuideLine from "./GuideLine";
-import Grid from "./Grid";
+import Grid from "./components/Grid";
+import Anchor from "./components/Anchor";
+import Source from "./components/Source";
+import EndPoint from "./components/EndPoint";
+import Connector from "./components/Connector";
+import GuideLine from "./components/GuideLine";
 
 //能力
-import Drag from "./Drag";
-import Util from "./Util";
-import Link from "./Link";
+import Util from "./Util/Util";
+import Link from "./Util/Link";
 import Render from "./Render";
-import DOMUtil from "./DOMUtil";
+import DOMUtil from "./Util/DOMUtil";
 import EleResize from "./EleResize";
-import Observable from "./Observable";
+import Observable from "./event/Observable";
+import EventHandler from "./event/EventHandler";
 
 //参数
-import Options from "./Options";
+import Options from "./config/Options";
 
 /**
  * 主入口，承上（组件）启下（能力）
@@ -26,7 +26,7 @@ class Plumb extends Observable {
         super();
 
         this.flag = 1;
-        this.config = Object.assign({}, Options.default, config);
+        this.config = Object.assign({}, Options.default, config, { scale: 1 });
 
         this.sources = [];
         this.endPoints = [];
@@ -52,8 +52,11 @@ class Plumb extends Observable {
         this.init(targets);
         this.initEvents();
         this.initResizeEvent();
-        if (this.config.useGuideLine) this.initGuideLine();
-        if (this.config.useGrid) this.initGrid();
+
+        const { useGuideLine, useGrid, useScale } = this.config;
+        if (useGrid) this.initGrid();
+        if (useScale) this.initScale();
+        if (useGuideLine) this.initGuideLine();
     }
 
     /**
@@ -76,9 +79,9 @@ class Plumb extends Observable {
      * 初始化全局事件
      */
     initEvents() {
-        this.bind(document, "mousedown", Drag.dragStart);
-        this.bind(document, "mousemove", Drag.dragging);
-        this.bind(document, "mouseup", Drag.dragEnd);
+        this.bind(document, "mousedown", EventHandler.mouseDown);
+        this.bind(document, "mousemove", EventHandler.mouseMove);
+        this.bind(document, "mouseup", EventHandler.mouseUp);
     }
 
     /**
@@ -86,6 +89,21 @@ class Plumb extends Observable {
      */
     initResizeEvent() {
         EleResize.on(this.wrapper, this.handleResize.bind(this));
+    }
+
+    /**
+     * 初始化缩放
+     */
+    initScale() {
+        const me = this;
+        Number.prototype.toScale = function() {
+            return this * me.config.scale;
+        };
+        Number.prototype.restoreScale = function() {
+            return this / me.config.scale;
+        };
+
+        this.bind(this.wrapper, "wheel", EventHandler.mouseWheel);
     }
 
     /**
@@ -237,7 +255,13 @@ class Plumb extends Observable {
                         );
 
                         //更新连接线
-                        connector.trigger("update", { width, height, bound, size, isCreate: true });
+                        connector.trigger("update", {
+                            width,
+                            height,
+                            bound,
+                            size,
+                            isCreate: true
+                        });
 
                         return connector;
                     }
@@ -281,11 +305,19 @@ class Plumb extends Observable {
     updateConnector(UUID) {
         for (let uuid in plumb.connectors) {
             let connector = plumb.connectors[uuid];
-            if (UUID === connector.getSource().uuid || UUID === connector.getTarget().uuid) {
+            if (
+                UUID === connector.getSource().uuid ||
+                UUID === connector.getTarget().uuid
+            ) {
                 connector.trigger("update");
             }
         }
     }
+
+    /**
+     * 更新所有的连接线
+     */
+    updateAllConnector() {}
 
     /**
      * 添加marker箭头，连接线使用
@@ -298,7 +330,12 @@ class Plumb extends Observable {
     addMarker(connectorUUID, rect, markerType, markerId) {
         let connector = plumb.connectors[connectorUUID];
         let parentWrapper = DOMUtil.find("tag", "svg", connector.element);
-        let marker = Render.assembleMarker(rect, markerType, markerId, connector.lineColor);
+        let marker = Render.assembleMarker(
+            rect,
+            markerType,
+            markerId,
+            connector.lineColor
+        );
         DOMUtil.appendToNode(marker, parentWrapper);
 
         const path = DOMUtil.find("tag", "path", parentWrapper);
@@ -347,4 +384,12 @@ class Plumb extends Observable {
     }
 }
 
-export default Plumb;
+// const plumb = (targets, config = {}) => new Plumb(targets, config);
+
+// if (window) {
+//     window.x = window.x || {};
+//     window.x.plumb = plumb;
+//     window.x.plumb.locale = (lang, message) => locale(lang, message);
+// }
+
+export { Plumb };

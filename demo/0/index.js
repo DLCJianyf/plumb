@@ -8,6 +8,7 @@ window.plumb = new Plumb(sources, {
     padding: 20,
     useGuideLine: true,
     useGrid: true,
+    useScale: true,
     lineColor: "blue",
     textColor: "red"
 });

@@ -1,7 +1,7 @@
-import Util from "./Util";
-import Render from "./Render";
-import Observable from "./Observable";
-import Drag from "./Drag";
+import Util from "../Util/Util";
+import Render from "../Render";
+import Observable from "../event/Observable";
+import EventHandler from "../event/EventHandler";
 
 /**
  * 可拖动窗体
@@ -61,7 +61,7 @@ class Source extends Observable {
             Render.updatePosition(item.element, item.rect.x, item.rect.y);
         });
 
-        if (plumb.config.useGuideLine && Drag.dragEl) this.calGuideLine();
+        if (plumb.config.useGuideLine && EventHandler.dragEl) this.calGuideLine();
     }
 
     /**

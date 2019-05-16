@@ -1,6 +1,6 @@
-import Observable from "./Observable";
-import Util from "./Util";
-import DOMUtil from "./DOMUtil";
+import Observable from "../event/Observable";
+import Util from "../Util/Util";
+import DOMUtil from "../Util/DOMUtil";
 
 /**
  * 背景网格

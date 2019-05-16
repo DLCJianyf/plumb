@@ -1,6 +1,6 @@
-import Link from "./Link";
-import Util from "./Util";
-import DOMUtil from "./DOMUtil";
+import Link from "./Util/Link";
+import Util from "./Util/Util";
+import DOMUtil from "./Util/DOMUtil";
 
 /**
  * 渲染类，根据构建好的参数进行dom神马的创建，更新
@@ -123,7 +123,10 @@ class Render {
             d += `${p[0]},${p[1]}`;
         }
 
-        let strokeDasharray = Util.getDashStyle(lineDashType, plumb.config.strokeWidth).toString();
+        let strokeDasharray = Util.getDashStyle(
+            lineDashType,
+            plumb.config.strokeWidth
+        ).toString();
 
         DOMUtil.setAttributes(path, {
             d: d,

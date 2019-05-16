@@ -5,7 +5,7 @@ module.exports = {
     //mode: "production",
     mode: "development",
     //  入口文件
-    entry: "./src/index.js",
+    entry: "./src/Plumb.js",
 
     //  输出文件
     output: {

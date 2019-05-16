@@ -1,6 +1,6 @@
-import Util from "./Util";
-import Render from "./Render";
-import Observable from "./Observable";
+import Util from "../Util/Util";
+import Render from "../Render";
+import Observable from "../event/Observable";
 import Connector from "./Connector";
 
 class Anchor extends Observable {
@@ -70,7 +70,10 @@ class Anchor extends Observable {
                 );
                 if (isTwoPointIntersect) {
                     plumb.deleteConnector(endPoint, plumb.floatingEndPoint);
-                    let connector = plumb.addConnector(endPoint, plumb.floatingEndPoint.uuid);
+                    let connector = plumb.addConnector(
+                        endPoint,
+                        plumb.floatingEndPoint.uuid
+                    );
                     if (connector.uuid && plumb.config.marker) {
                         plumb.addMarker(
                             connector.uuid,

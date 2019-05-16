@@ -1,10 +1,10 @@
 import Textarea from "./Textarea";
 
-import Util from "./Util";
-import DOMUtil from "./DOMUtil";
-import Link from "./Link";
-import Render from "./Render";
-import Observable from "./Observable";
+import Util from "../Util/Util";
+import DOMUtil from "../Util/DOMUtil";
+import Link from "../Util/Link";
+import Render from "../Render";
+import Observable from "../event/Observable";
 
 /**
  * 连接线，SVG

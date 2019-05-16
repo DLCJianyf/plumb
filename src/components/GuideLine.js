@@ -1,5 +1,5 @@
-import DOMUtil from "./DOMUtil";
-import Observable from "./Observable";
+import DOMUtil from "../Util/DOMUtil";
+import Observable from "../event/Observable";
 
 /**
  * 辅助线
@@ -63,7 +63,10 @@ class GuideLine extends Observable {
      * 隐藏
      */
     hide() {
-        DOMUtil.setStyle(this.element, { visibility: "hidden", transform: "translate(0, 0)" });
+        DOMUtil.setStyle(this.element, {
+            visibility: "hidden",
+            transform: "translate(0, 0)"
+        });
     }
 }
 

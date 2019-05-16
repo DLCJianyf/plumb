@@ -1,8 +1,8 @@
-import Render from "./Render";
-import Util from "./Util";
-import DOMUtil from "./DOMUtil";
+import Render from "../Render";
+import Util from "../Util/Util";
+import DOMUtil from "../Util/DOMUtil";
 
-const Drag = {
+const EventHandler = {
     //鼠标是否按下
     isDown: false,
     //当前拖拽目标
@@ -21,11 +21,11 @@ const Drag = {
      *
      * @param {Event} evt
      */
-    dragStart(evt, target) {
-        Drag.isDown = true;
-        if (Drag.dragEl) {
-            Drag.dragEl.originX = evt.clientX;
-            Drag.dragEl.originY = evt.clientY;
+    mouseDown(evt, target) {
+        EventHandler.isDown = true;
+        if (EventHandler.dragEl) {
+            EventHandler.dragEl.originX = evt.clientX;
+            EventHandler.dragEl.originY = evt.clientY;
         }
     },
 
@@ -34,10 +34,10 @@ const Drag = {
      *
      * @param {Event} evt
      */
-    dragging(evt) {
-        if (Drag.isDown) {
-            if (Drag.dragEl) {
-                const target = Drag.dragEl;
+    mouseMove(evt) {
+        if (EventHandler.isDown) {
+            if (EventHandler.dragEl) {
+                const target = EventHandler.dragEl;
                 const $X = evt.clientX - target.originX;
                 const $Y = evt.clientY - target.originY;
 
@@ -58,21 +58,27 @@ const Drag = {
             //优先从节点中找
             plumb.draggableEls.SOURCE.forEach(function(el) {
                 if (!isFind) {
-                    isFind = Util.isInRect({ x: evt.clientX, y: evt.clientY }, el.getRect());
-                    isFind && Drag.setDragEl(el);
+                    isFind = Util.isInRect(
+                        { x: evt.clientX, y: evt.clientY },
+                        el.getRect()
+                    );
+                    isFind && EventHandler.setDragEl(el);
                 }
             });
 
             if (!isFind) {
                 plumb.draggableEls.ENDPOINT.forEach(function(el) {
                     if (!isFind) {
-                        isFind = Util.isInCircle({ x: evt.clientX, y: evt.clientY }, el.getRect());
-                        isFind && Drag.setDragEl(el);
+                        isFind = Util.isInCircle(
+                            { x: evt.clientX, y: evt.clientY },
+                            el.getRect()
+                        );
+                        isFind && EventHandler.setDragEl(el);
                     }
                 });
             }
 
-            !isFind && Drag.setDragEl(null);
+            !isFind && EventHandler.setDragEl(null);
 
             //手势
             // DOMUtil.cursor(isFind);
@@ -84,10 +90,20 @@ const Drag = {
      *
      * @param {Event} evt
      */
-    dragEnd(evt) {
-        Drag.isDown = false;
-        Drag.dragEl && Drag.dragEl.trigger("moveend", Drag.dragEl.type);
+    mouseUp(evt) {
+        EventHandler.isDown = false;
+        EventHandler.dragEl &&
+            EventHandler.dragEl.trigger("moveend", EventHandler.dragEl.type);
+    },
+
+    /**
+     * 鼠标滚轮事件
+     *
+     * @param {Event} evt
+     */
+    mouseWheel(evt) {
+        console.log(evt);
     }
 };
 
-export default Drag;
+export default EventHandler;
