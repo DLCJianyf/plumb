@@ -103,7 +103,9 @@ class Util {
      * @param {Object} c2
      */
     static isCircleIntersect(c1, c2) {
-        let centerDistance = Math.sqrt(Math.pow(c1.x - c2.x, 2) + Math.pow(c1.y - c2.y, 2));
+        let centerDistance = Math.sqrt(
+            Math.pow(c1.x - c2.x, 2) + Math.pow(c1.y - c2.y, 2)
+        );
 
         return centerDistance <= c1.r * 2;
     }
@@ -115,7 +117,9 @@ class Util {
      * @param {Object} rect
      */
     static isInRect(p, rect) {
-        return p.x > rect.x && p.x < rect.x + rect.w && p.y > rect.y && p.y < rect.y + rect.h;
+        return (
+            p.x > rect.x && p.x < rect.x + rect.w && p.y > rect.y && p.y < rect.y + rect.h
+        );
     }
 
     /**
@@ -164,11 +168,11 @@ class Util {
      * @param {HTMLElement} element
      */
     static getElementRectInfo(element) {
-        const info = ["offsetLeft", "offsetTop", "offsetWidth", "offsetHeight"].map(function(
-            attrName
-        ) {
-            return element[attrName] || 0;
-        });
+        const info = ["offsetLeft", "offsetTop", "offsetWidth", "offsetHeight"].map(
+            function(attrName) {
+                return element[attrName] || 0;
+            }
+        );
 
         return {
             x: info[0],
@@ -246,12 +250,12 @@ class Util {
      * 根据锚点找到对应的source
      *
      * @param {Array}  sous
-     * @param {Object} achor
+     * @param {Object} anchor
      */
-    static findSourceByAchor(sous, achor) {
+    static findSourceByAchor(sous, anchor) {
         for (let sou of sous) {
             for (let ach of sou.endPoints) {
-                if (ach.uuid === achor.uuid) {
+                if (ach.uuid === anchor.uuid) {
                     return sou;
                 }
             }

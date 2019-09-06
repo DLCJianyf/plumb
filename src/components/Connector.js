@@ -22,7 +22,7 @@ class Connector extends Observable {
         this.textColor = sourceEndPoint.textColor;
 
         this.uuid = `${sourceEndPoint.uuid}^-^${targetEndPoint.uuid}`;
-        this.markerId = `marker-achor-${plumb.flag++}`;
+        this.markerId = `marker-anchor-${plumb.flag++}`;
 
         this.showText = false;
 

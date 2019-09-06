@@ -45,7 +45,7 @@ class Plumb extends Observable {
         this.wrapper = DOMUtil.find("class", "jtk-demo-main");
 
         if (!this.wrapper) {
-            console.log("");
+            console.log("Can not find container!");
             return;
         }
 
